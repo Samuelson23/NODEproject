@@ -19,9 +19,18 @@ const UserSchema = new Schema({
     imagen: { type: String },
     confirmationCode: { type: String, required: true },
     check: { type: Boolean, default: false },
-    events: [{ type: Schema.Types.ObjectId, ref: "Event" }],
-    review: [{ type: Schema.Types.ObjectId, ref: "Review" }]
+    events: [{ type: mongoose.Schema.Types.ObjectId, ref: "Event" }],
+    review: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }]
 });
+
+UserSchema.pre('save', async function (next) {
+    try {
+      this.password = await bcrypt.hash(this.password, 10);
+      next();
+    } catch (error) {
+      next('Error hashing password', error);
+    }
+  });
 
 const User = mongoose.model("User", UserSchema);
 module.exports = User;
