@@ -19,3 +19,5 @@ const verifyToken = (token) => {
   //con jwt.verify verificamos que los datos del token sean permitidos por la JWT_SECRET (no es lo mismo)
   return jwt.verify(token, process.env.JWT_SECRET);
 };
+
+module.exports = { generateToken, verifyToken };
