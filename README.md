@@ -1,5 +1,8 @@
 # NODEproject
 
+mongodb+srv://SalazarDeJerusalen7:<password>@cluster0.206dk6j.mongodb.net/?retryWrites=true&w=majority
+phndjhfnqxcxnagg
+
 proyecto hecho por Marc, Alex, Carlos y Samuel
 
 OBJETIVOS
