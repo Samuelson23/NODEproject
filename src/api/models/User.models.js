@@ -21,7 +21,11 @@ const UserSchema = new Schema({
     check: { type: Boolean, default: false },
     events: [{ type: mongoose.Schema.Types.ObjectId, ref: "Event" }],
     review: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }]
-});
+    },
+    {
+        timestamps: true,
+    }
+);
 
 UserSchema.pre('save', async function (next) {
     try {
