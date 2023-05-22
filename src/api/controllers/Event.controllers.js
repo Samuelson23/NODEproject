@@ -45,6 +45,10 @@ const updateEvent = async (req, res, next) => {
 
 const deleteEvent = async (req, res, next) => {
   try {
+    const {id} = req.params;
+    await Event.findByIdAndDelete(id);
+    return res.status(200).json('Character deleted!');
+
   } catch (error) {}
 };
 
