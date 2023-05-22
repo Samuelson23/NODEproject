@@ -2,6 +2,10 @@
 
 mongodb+srv://SalazarDeJerusalen7:<password>@cluster0.206dk6j.mongodb.net/?retryWrites=true&w=majority
 phndjhfnqxcxnagg
+941257743569624 api key
+xK8hMMxxmYj4VXO-WFcTv_fRDOU api secret
+dwbw3uill cloud name
+
 
 proyecto hecho por Marc, Alex, Carlos y Samuel
 
