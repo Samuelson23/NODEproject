@@ -100,7 +100,68 @@ const register = async (req, res, next) => {
 
 const forgotPassword = async (req, res, next) => {
   try {
-  } catch (error) {}
+    //Recogemos el email del usuario que quiere cambiar la contraseña
+    //Buscamos al usuario por su email y creamos una contraseña nueva con randomPassword()
+    const emailUser = req.body.email;
+    const userDB = await User.findOne({ email: emailUser });
+    const newPassword = randomPassword();
+    console.log("CONSOLELOG USER", userDB);
+    //console.log(emailUser);
+    //Si el usuario existe en nuestra base de datos le enviamos un correo mediante nodemailer con la nueva contraseña
+    if (userDB) {
+      const idUser = userDB._id;
+      console.log("id", idUser);
+      const emailDB = process.env.EMAIL;
+      const passDB = process.env.PASSWORD;
+      console.log(emailDB, passDB);
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: emailDB,
+          pass: passDB,
+        },
+      });
+
+      const mailOptions = {
+        from: emailDB,
+        to: emailUser,
+        subject: "Nuevo acceso",
+        description: `User: ${userDB.name} tu nueva clave de acceso es: ${newPassword}`,
+      };
+
+      transporter.sendMail(mailOptions, async function (error, info) {
+        if (error) {
+          console.log(error);
+          return res.status(404).json("No se ha enviado el correo");
+        }
+        //Cuando enviamos el correo encriptamos la contraseña y actualizamos el usuario en nuestra base de datos.
+        else {
+          const newPasswordEncrypt = bcrypt.hashSync(newPassword, 10);
+          console.log("passEnc", newPasswordEncrypt);
+          await User.findByIdAndUpdate(idUser, { password: newPasswordEncrypt });
+          const updateUser = await User.findById(idUser);
+          console.log(updateUser);
+          //Comprobamos que la contraseña actualizada en la base de datos coincide con la contraseña encriptada
+          if (bcrypt.compareSync(newPassword, updateUser.password)) {
+            return res.status(200).json({
+              userUpdate: true,
+              passUpdate: true,
+            });
+          } else {
+            return res.status(404).json({
+              userUpdate: true,
+              passUpdate: false,
+            });
+          }
+        }
+      });
+    } else {
+      return res.status(404).json("No se ha encontrado ningun user con ese email");
+    }
+  } catch (error) {
+    console.log(error);
+    return next(error);
+  }
 };
 
 //------------------------------ CHANGE PASS ----------------------------------

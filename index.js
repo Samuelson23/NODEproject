@@ -13,7 +13,7 @@ connect();
 
 //limitamos el envio de datos a 5mb y hacemos el urlencoded
 server.use(express.json({ limit: "5mb" }));
-server.use(express.urlencoded({ limit: "5mb", extended: true }));
+server.use(express.urlencoded({ limit: "5mb", extended: false }));
 
 /*
                         ROUTES
