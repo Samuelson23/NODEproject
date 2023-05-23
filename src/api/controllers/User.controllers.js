@@ -19,8 +19,79 @@ dotenv.config();
 //----------------------------------------------------------------------
 
 const register = async (req, res, next) => {
+  let userImage = req.file?.path;
   try {
-  } catch (error) {}
+    //Creamos el codigo de verificacion con la funcion importada randomCode() y nos guardamos el name y email que nos pasa por la request
+    let confirmationCode = randomeCode();
+    const { email, name } = req.body;
+
+    //Buscamos a ver si existe ese name y ese email en la base de datos
+    const userExist = await User.findOne({
+      email: req.body.email,
+      name: req.body.name,
+    });
+
+    //Si el usuario ya se encuentra en la base de datos le decimos que ya esta registrado y sino lo registramos
+    if (!userExist) {
+      const newUser = new User({ ...req.body, confirmationCode });
+      if (req.file) {
+        newUser.image = userImage;
+      } else {
+        newUser.image =
+          "https://res.cloudinary.com/dwbw3uill/image/upload/v1684827346/png-clipart-graphics-arrest-youtuber-anonymous-angle-rectangle-thumbnail_zyxs7h.png";
+      }
+
+      //guardamos el usuario
+      const userSave = await newUser.save();
+
+      //comprobamos si se ha guardado bien. De ser asi le enviamos el correo de verificacion con el codigo de confirmacion. Todo esto lo hacemos con nodemailer
+      if (userSave) {
+        const emailDB = process.env.EMAIL;
+        const passwordDB = proces.env.PASSWORD;
+
+        //El transporter es el metodo por el cual se envia el correo (serivicio=gmail y los datos de quien lo envia, en este caso el email y pass de nuestra base de datos)
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: emailDB,
+            pass: passwordDB,
+          },
+        });
+
+        //Creamos las opciones del email (quien lo envia, a quien, y lo que le vamos a decir en el email)
+        const mailOptions = {
+          from: emailDB,
+          to: email,
+          subject: "Confirmation code",
+          description: `Tu codigo de confirmacion ${confirmationCode}. Gracias por registrarte ${name}`,
+        };
+
+        //Enviamos el correo y comprobamos que no haya un error. Si hay un error devolvemos un 404 y si no hay ningun error devolvemos un 200 con el usuario y su codigo de confirmacion
+        transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            console.log(error);
+            return res.status(404).json({
+              user: userSave,
+              confirmationCode: "error en el codigo de confirmacion",
+            });
+          } else {
+            return res.status(200).json({
+              user: userSave,
+              confirmationCode,
+            });
+          }
+        });
+      }
+
+      //Si el usuario ya existe en la base de datos lanzamos un error 409 de conflicto, porque ya está registrado y borramos la imagen que nos ha enviado en la request porque se ha subido a Cloudinary
+    } else {
+      deleteImgCloudinary(userImage);
+      return res.status(409).json("El usuario ya existe");
+    }
+  } catch (error) {
+    deleteImgCloudinary(userImage);
+    return next(error);
+  }
 };
 
 //------------------------------ FORGOT PASS --------------------------
