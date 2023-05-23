@@ -1,3 +1,4 @@
+const { upload } = require("../../middleware/files.middleware");
 const {
   register,
   getAll,
@@ -17,9 +18,10 @@ const express = require("express").Router();
 
 const userRoutes = express;
 
-userRoutes.post("/register", register);
+userRoutes.post("/register", upload.single("imagen"), register);
 userRoutes.post("/login", login);
 userRoutes.get("/forgotPassword", forgotPassword);
 userRoutes.post("/changePassword", changePassword);
+userRoutes.delete("/deleteUser", deleteUser);
 
 module.exports = userRoutes;

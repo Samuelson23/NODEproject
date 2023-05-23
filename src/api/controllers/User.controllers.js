@@ -19,6 +19,7 @@ dotenv.config();
 //----------------------------------------------------------------------
 
 const register = async (req, res, next) => {
+  console.log(req.body);
   let userImage = req.file?.path;
   try {
     //Creamos el codigo de verificacion con la funcion importada randomCode() y nos guardamos el name y email que nos pasa por la request
@@ -35,9 +36,9 @@ const register = async (req, res, next) => {
     if (!userExist) {
       const newUser = new User({ ...req.body, confirmationCode });
       if (req.file) {
-        newUser.image = userImage;
+        newUser.imagen = userImage;
       } else {
-        newUser.image =
+        newUser.imagen =
           "https://res.cloudinary.com/dwbw3uill/image/upload/v1684827346/png-clipart-graphics-arrest-youtuber-anonymous-angle-rectangle-thumbnail_zyxs7h.png";
       }
 
@@ -86,7 +87,7 @@ const register = async (req, res, next) => {
 
       //Si el usuario ya existe en la base de datos lanzamos un error 409 de conflicto, porque ya está registrado y borramos la imagen que nos ha enviado en la request porque se ha subido a Cloudinary
     } else {
-      //deleteImgCloudinary(userImage);
+      deleteImgCloudinary(userImage);
       return res.status(409).json("El usuario ya existe");
     }
   } catch (error) {
@@ -213,7 +214,25 @@ const updateUser = async (req, res, next) => {
 
 const deleteUser = async (req, res, next) => {
   try {
-  } catch (error) {}
+    console.log(req.body);
+    //Recogemos el email de la request y buscamos al usuario por su email para obtener la ID y despues borrarlo con findByIdAndDelete
+    const { email } = req.body;
+    console.log(email);
+    const userToDelete = await User.findOne({ email });
+
+    console.log(userToDelete);
+    const userID = userToDelete._id;
+    await User.findByIdAndDelete(userID);
+
+    if (await User.findById(userID)) {
+      return res.status(404).json("No se ha podido borrar el usuario");
+    } else {
+      deleteImgCloudinary(userToDelete.imagen);
+      return res.status(200).json("Se ha borrado el usuario correctamente");
+    }
+  } catch (error) {
+    return next(error);
+  }
 };
 
 //------------------------------ LOGIN ------------------------------

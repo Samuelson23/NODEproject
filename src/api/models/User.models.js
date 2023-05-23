@@ -20,7 +20,7 @@ const UserSchema = new Schema(
       type: String,
       required: true,
       unique: true,
-      validate: [validator.isEmail, "Email not valid"],
+      //validate: [validator.isEmail, "Email not valid"],
     },
     password: { type: String, required: true, trim: true },
     imagen: { type: String },

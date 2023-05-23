@@ -2,7 +2,7 @@ const { configCloudinary } = require("./src/middleware/files.middleware");
 const { connect } = require("./src/utils/db");
 const express = require("express");
 const dotenv = require("dotenv");
-
+const cors = require("cors");
 const server = express();
 
 dotenv.config();
@@ -11,9 +11,16 @@ const ROUTE = process.env.ROUTE;
 const PORT = process.env.PORT;
 connect();
 
+server.use(
+  cors({
+    origin: "*",
+    credentials: true,
+  })
+);
+
 //limitamos el envio de datos a 5mb y hacemos el urlencoded
-server.use(express.json({ limit: "5mb" }));
-server.use(express.urlencoded({ limit: "5mb", extended: false }));
+server.use(express.json({ limit: "12mb" }));
+server.use(express.urlencoded({ limit: "12mb", extended: false }));
 
 /*
                         ROUTES
