@@ -64,13 +64,13 @@ const getByName = async (req, res, next) => {
 const getById = async (req, res, next) => {
   try {
     const { id, string } = req.params;
-    await Event.findByIdAndDelete(id);
+    await Event.getyIdAndDelete(id);
 
-    if (await Event.findById(id)) {
-      return res.status(404).json("El evento no se ha borrado");
+    if (await Event.getById(id)) {
+      return res.status(404).json();
     } else {
       deleteImgCloudinary(string);
-      return res.status(200).json("Evento borrado");
+      return res.status(200).json();
     }
   } catch (error) {
     return next(error);
