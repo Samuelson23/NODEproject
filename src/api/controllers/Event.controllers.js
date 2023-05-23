@@ -52,6 +52,7 @@ const getAll = async (req, res, next) => {
       return res.status(200).json(allEvent);
     } else {
       return res.status(404).json("Not found all character");
+    }
   } catch (error) {
     return next(error);
   }
