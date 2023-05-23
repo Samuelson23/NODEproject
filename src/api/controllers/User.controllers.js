@@ -169,7 +169,35 @@ const forgotPassword = async (req, res, next) => {
 
 const changePassword = async (req, res, next) => {
   try {
-  } catch (error) {}
+    //Nos traemos el email, la password y la nueva password por la request. Con el email buscamos el user al que queremos cambiarle la contraseña
+    const { email, password, newPassword } = req.body;
+    const user = await User.findOne({ email });
+    const userID = user._id;
+
+    //Comparamos la contraseña introducida para ver si es el usuario real, ya que necesitamos comprobar que se sepa la contraseña de la cuenta para poder hacer el cambio
+    if (bcrypt.compareSync(password, user.password)) {
+      //Si las contraseñas coinciden procedemos. Hacemos el encriptado de la newPassword y hacemos un update del user modificando la contraseña
+      const newPasswordEncrypt = bcrypt.hashSync(newPassword, 10);
+      await User.findByIdAndUpdate(userID, { password: newPasswordEncrypt });
+
+      //Buscamos el usuario para comprobar que se haya actualizado la contraseña. Si es asi, devolvemos un 200 con true y sino un 404 con false
+      const userUpdate = await User.findById(userID);
+      console.log(userUpdate);
+      if (bcrypt.compareSync(newPassword, userUpdate.password)) {
+        return res.status(200).json({
+          updateUser: true,
+        });
+      } else {
+        return res.status(404).json({
+          updateUser: false,
+        });
+      }
+    } else {
+      return res.status(404).json("La contraseña introducida es incorrecta");
+    }
+  } catch (error) {
+    return next(error);
+  }
 };
 
 //------------------------------ UPDATE ------------------------------

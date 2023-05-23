@@ -20,5 +20,6 @@ const userRoutes = express;
 userRoutes.post("/register", register);
 userRoutes.post("/login", login);
 userRoutes.get("/forgotPassword", forgotPassword);
+userRoutes.post("/changePassword", changePassword);
 
 module.exports = userRoutes;
