@@ -18,5 +18,6 @@ const express = require("express").Router();
 const userRoutes = express;
 
 userRoutes.post("/register", register);
+userRoutes.post("/login", login);
 
 module.exports = userRoutes;

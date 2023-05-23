@@ -5,7 +5,7 @@ const User = require("../models/User.models");
 const validator = require("validator");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-const bcript = require("bcrypt");
+const bcrypt = require("bcrypt");
 const randomCode = require("../../utils/randomCode");
 const randomPassword = require("../../utils/randomPass");
 const { generateToken, verifyToken } = require("../../utils/token");
@@ -132,7 +132,27 @@ const deleteUser = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   try {
-  } catch (error) {}
+    //Nos guardamos el email y la pass de la request y buscamos en la base de datos al usuario por su email
+    const { email, password } = req.body;
+    const userDB = await User.findOne({ email });
+
+    //Si el usuario existe comparamos las contraseñas y en caso de coincidan creamos un token de inicio de sesion
+    if (userDB) {
+      if (bcrypt.compareSync(password, userDB.password)) {
+        const token = generateToken(userDB._id, email);
+        return res.status(200).json({
+          user: { email, _id: userDB._id },
+          token,
+        });
+      } else {
+        return res.status(404).json("Contraseña incorrecta");
+      }
+    } else {
+      return res.status(404).json("El usuario no existe");
+    }
+  } catch (error) {
+    return next(error);
+  }
 };
 
 //------------------------------ LOGOUT ------------------------------
