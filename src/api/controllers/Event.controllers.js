@@ -63,7 +63,18 @@ const getByName = async (req, res, next) => {
 
 const getById = async (req, res, next) => {
   try {
-  } catch (error) {}
+    const { id, string } = req.params;
+    await Event.findByIdAndDelete(id);
+
+    if (await Event.findById(id)) {
+      return res.status(404).json("El evento no se ha borrado");
+    } else {
+      deleteImgCloudinary(string);
+      return res.status(200).json("Evento borrado");
+    }
+  } catch (error) {
+    return next(error);
+  }
 };
 
 module.exports = { createEvent, updateEvent, deleteEvent, getAll, getById, getByName };
