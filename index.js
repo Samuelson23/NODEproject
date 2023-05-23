@@ -20,20 +20,21 @@ server.use(express.urlencoded({ limit: "5mb", extended: true }));
 
 */
 const eventRoutes = require("./src/api/routes/Event.routes");
+const userRoutes = require("./src/api/routes/User.routes");
 server.use("/api/v1/event/", eventRoutes);
+server.use("/api/v1/", userRoutes);
 
 //controlamos los errores cuando no se meta bien la ruta o haya algun fallo
-server.use("*", (req, res, next) => {
+/* server.use("*", (req, res, next) => {
   const error = new Error("Route not found");
   error.status = 404;
   return next(error);
-});
+}); 
 server.use((error, req, res) => {
   return res.status(error.status || 500).json(error.message || "Unexpected error");
-});
+});*/
 
 server.disable("x-powered-by");
 server.listen(PORT, () => {
   console.log(`Listening on PORT ${ROUTE}${PORT}`); //Metemos la URL de forma dinámica por si en un futuro hubieran cambios de dirección
 });
-

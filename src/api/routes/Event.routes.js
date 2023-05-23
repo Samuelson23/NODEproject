@@ -1,5 +1,5 @@
 const {
-  create,
+  createEvent,
   updateEvent,
   deleteEvent,
   getAll,
@@ -10,6 +10,6 @@ const {
 const express = require("express");
 const eventRoutes = express.Router();
 
-eventRoutes.post("/", create);
+eventRoutes.post("/", createEvent);
 
 module.exports = eventRoutes;

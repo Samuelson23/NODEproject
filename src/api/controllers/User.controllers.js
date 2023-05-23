@@ -75,6 +75,7 @@ const register = async (req, res, next) => {
               confirmationCode: "error en el codigo de confirmacion",
             });
           } else {
+            console.log("Email enviado");
             return res.status(200).json({
               user: userSave,
               confirmationCode,

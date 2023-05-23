@@ -7,23 +7,6 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const bcript = require("bcrypt");
 
-//----------------CREATE--------------- hay que modificarlo para que sólo lo pueda crear un usuario admin
-const create = async (req, res, next) => {
-  console.log(req.body);
-  try {
-    const newEvent = new Event(req.body);
-    const saveEvent = await newEvent.save();
-    console.log(saveEvent);
-    if (saveEvent) {
-      return res.status(200).json(saveEvent);
-    } else {
-      return res.status(404).json("no se ha podido crear el evento");
-    }
-  } catch (error) {
-    return next(error);
-  }
-};
-
 //------------------------------ CREATE ------------------------------
 //----------------------------------------------------------------------
 
@@ -45,11 +28,18 @@ const updateEvent = async (req, res, next) => {
 
 const deleteEvent = async (req, res, next) => {
   try {
-    const {id} = req.params;
+    const { id, image } = req.params;
     await Event.findByIdAndDelete(id);
-    return res.status(200).json('Character deleted!');
 
-  } catch (error) {}
+    if (await Event.findById(id)) {
+      return res.status(404).json("El evento no se ha borrado");
+    } else {
+      deleteImgCloudinary(image);
+      return res.status(200).json("Evento borrado");
+    }
+  } catch (error) {
+    return next(error);
+  }
 };
 
 //------------------------------ GETBYALL ------------------------------
@@ -76,4 +66,4 @@ const getById = async (req, res, next) => {
   } catch (error) {}
 };
 
-module.exports = { create, updateEvent, deleteEvent, getAll, getById, getByName };
+module.exports = { createEvent, updateEvent, deleteEvent, getAll, getById, getByName };
