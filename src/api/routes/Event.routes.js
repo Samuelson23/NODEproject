@@ -12,4 +12,6 @@ const eventRoutes = express.Router();
 
 eventRoutes.post("/", createEvent);
 eventRoutes.get("/:id", getById);
+eventRoutes.get("/:id",getByName);
+eventRoutes.get("/:id",getAll);
 module.exports = eventRoutes;
