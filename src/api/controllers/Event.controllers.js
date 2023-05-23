@@ -63,9 +63,17 @@ const getAll = async (req, res, next) => {
 
 const getByName = async (req, res, next) => {
   try {
-  } catch (error) {}
+    const { name } = req.params;
+    const eventByName = await Event.find({ name });
+    if (eventByName) {
+      return res.status(200).json(eventByName);
+    } else {
+      return res.status(404).json("Not found Event by name");
+    }
+  } catch (error) {
+    return next(error);
+  }
 };
-
 //------------------------------ GETBYID ------------------------------
 //----------------------------------------------------------------------
 
