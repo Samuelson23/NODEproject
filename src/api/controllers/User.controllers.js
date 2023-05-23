@@ -63,7 +63,7 @@ const register = async (req, res, next) => {
           from: emailDB,
           to: email,
           subject: "Confirmation code",
-          description: `Tu codigo de confirmacion ${confirmationCode}. Gracias por registrarte ${name}`,
+          text: `Tu codigo de confirmacion ${confirmationCode}. Gracias por registrarte ${name}`,
         };
 
         //Enviamos el correo y comprobamos que no haya un error. Si hay un error devolvemos un 404 y si no hay ningun error devolvemos un 200 con el usuario y su codigo de confirmacion
