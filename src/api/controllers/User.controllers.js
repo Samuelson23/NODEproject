@@ -22,7 +22,7 @@ const register = async (req, res, next) => {
   let userImage = req.file?.path;
   try {
     //Creamos el codigo de verificacion con la funcion importada randomCode() y nos guardamos el name y email que nos pasa por la request
-    let confirmationCode = randomeCode();
+    let confirmationCode = randomCode();
     const { email, name } = req.body;
 
     //Buscamos a ver si existe ese name y ese email en la base de datos
