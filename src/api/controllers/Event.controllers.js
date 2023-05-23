@@ -47,7 +47,15 @@ const deleteEvent = async (req, res, next) => {
 
 const getAll = async (req, res, next) => {
   try {
-  } catch (error) {}
+    const allEvent = await Event.find();
+    if (allEvent) {
+      return res.status(200).json(allEvent);
+    } else {
+      return res.status(404).json("Not found all character");
+    }
+  } catch (error) {
+    return next(error);
+  }
 };
 
 //------------------------------ GETBYNAME ------------------------------
@@ -63,7 +71,18 @@ const getByName = async (req, res, next) => {
 
 const getById = async (req, res, next) => {
   try {
-  } catch (error) {}
+    const { id, string } = req.params;
+    await Event.getyIdAndDelete(id);
+
+    if (await Event.getById(id)) {
+      return res.status(404).json();
+    } else {
+      deleteImgCloudinary(string);
+      return res.status(200).json();
+    }
+  } catch (error) {
+    return next(error);
+  }
 };
 
 module.exports = { createEvent, updateEvent, deleteEvent, getAll, getById, getByName };
