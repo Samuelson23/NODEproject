@@ -47,7 +47,14 @@ const deleteEvent = async (req, res, next) => {
 
 const getAll = async (req, res, next) => {
   try {
-  } catch (error) {}
+    const allEvent = await Event.find();
+    if (allEvent) {
+      return res.status(200).json(allEvent);
+    } else {
+      return res.status(404).json("Not found all character");
+  } catch (error) {
+    return next(error);
+  }
 };
 
 //------------------------------ GETBYNAME ------------------------------
