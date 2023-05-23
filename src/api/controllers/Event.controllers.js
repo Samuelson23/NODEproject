@@ -51,7 +51,7 @@ const getAll = async (req, res, next) => {
     if (allEvent) {
       return res.status(200).json(allEvent);
     } else {
-      return res.status(404).json("Not found all character");
+      return res.status(404).json("Not found all Event");
     }
   } catch (error) {
     return next(error);
@@ -71,14 +71,13 @@ const getByName = async (req, res, next) => {
 
 const getById = async (req, res, next) => {
   try {
-    const { id, string } = req.params;
-    await Event.getyIdAndDelete(id);
+    const {id} = req.params;
+    const eventById = await Event.findById(id)
 
-    if (await Event.getById(id)) {
-      return res.status(404).json();
+    if (eventById) {
+      return res.status(200).json(eventById);
     } else {
-      deleteImgCloudinary(string);
-      return res.status(200).json();
+       return res.status(404).json("not found eventById");
     }
   } catch (error) {
     return next(error);
