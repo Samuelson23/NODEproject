@@ -273,7 +273,15 @@ const addToEvent = async (req, res, next) => {
 
 const getAll = async (req, res, next) => {
   try {
-  } catch (error) {}
+    const allUsers = await User.find().populate("events review");
+    if (allUsers) {
+      return res.status(200).json(allUsers);
+    } else {
+      return res.status(404).json("Not found user by id");
+    }
+  } catch (error) {
+    return next(error);
+  }
 };
 
 //------------------------------ GETBYID ------------------------------
@@ -281,7 +289,16 @@ const getAll = async (req, res, next) => {
 
 const getById = async (req, res, next) => {
   try {
-  } catch (error) {}
+    const { id } = req.params;
+    const userById = await User.findById(id).populate("events review");
+    if (userById) {
+      return res.status(200).json(userById);
+    } else {
+      return res.status(404).json("Not found user by id");
+    }
+  } catch (error) {
+    return next(error);
+  }
 };
 
 //------------------------------ GETBYNAME ------------------------------
@@ -289,7 +306,16 @@ const getById = async (req, res, next) => {
 
 const getByName = async (req, res, next) => {
   try {
-  } catch (error) {}
+    const { name } = req.params;
+    const usersByName = await User.find({ name });
+    if (usersByName) {
+      return res.status(200).json(usersByName);
+    } else {
+      return res.status(404).json("Not found user by name");
+    }
+  } catch (error) {
+    return next(error);
+  }
 };
 
 module.exports = {

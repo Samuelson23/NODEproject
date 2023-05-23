@@ -21,5 +21,8 @@ userRoutes.post("/register", register);
 userRoutes.post("/login", login);
 userRoutes.get("/forgotPassword", forgotPassword);
 userRoutes.post("/changePassword", changePassword);
+userRoutes.get("/name/:name", getByName);
+userRoutes.get("/", getAll);
+userRoutes.get("/:id", getById);
 
 module.exports = userRoutes;
