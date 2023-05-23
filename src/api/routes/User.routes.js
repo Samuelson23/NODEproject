@@ -18,6 +18,6 @@ const express = require("express");
 const userRoutes = express.Router();
 
 userRoutes.post = ("/register", register);
-userRoutes.get = ("/", register);
+userRoutes.get = ("/getEntro", console.log("entro"));
 console.log(userRoutes);
 module.exports = userRoutes;
