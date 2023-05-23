@@ -150,7 +150,7 @@ const forgotPassword = async (req, res, next) => {
             });
           } else {
             return res.status(404).json({
-              userUpdate: true,
+              userUpdate: false,
               passUpdate: false,
             });
           }
@@ -276,7 +276,32 @@ const logout = async (req, res, next) => {
 
 const createEvent = async (req, res, next) => {
   try {
-  } catch (error) {}
+    const { email, evName, description, location, data, hour } = req.body;
+    const user = await User.findOne({ email });
+    console.log(user);
+    const filterBody = {};
+
+    if (user.role !== "admin") {
+      return res.status(404).json("No tienes permisos de administrador");
+    } else {
+      const newEvent = new Event({
+        name: evName,
+        location: location,
+        data: data,
+        hour: hour,
+        description: description,
+      });
+      const saveEvent = await newEvent.save();
+      console.log(saveEvent);
+      /* if (saveEvent) {
+        return res.status(200).json(saveEvent);
+      } else {
+        return res.status(404).json("No se ha creado bien el evento ");
+      } */
+    }
+  } catch (error) {
+    return next(error);
+  }
 };
 
 //------------------------------ ADD TO EVENT ------------------------------
@@ -284,7 +309,26 @@ const createEvent = async (req, res, next) => {
 
 const addToEvent = async (req, res, next) => {
   try {
-  } catch (error) {}
+    const { email, events } = req.body;
+    const user = await User.findOne({ email });
+    //Creamos un array con los eventos introducidos en la request
+    const arrayEvents = events.split(",");
+
+    //Si el usuario existe, recorremos el array con todos los eventos que se hayan introducido para:
+    //    1) a User.events le puseamos cada uno de los eventos (las ids)
+    //    2) buscamos el evento por la ID y a ese evento le actualizamos el Event.user para que salga el usuario
+    if (user._id) {
+      arrayEvents.forEach(async (item) => {
+        user.events.push(item);
+        const eventById = await Event.findById(item);
+        await eventById.updateOne({
+          $push: { user: user._id },
+        });
+      });
+    }
+  } catch (error) {
+    return next(error);
+  }
 };
 
 //------------------------------ GETALL ------------------------------
@@ -307,7 +351,7 @@ const getAll = async (req, res, next) => {
 //---------------------------------------------------------------------
 
 const getById = async (req, res, next) => {
-  try {
+  /*   try {
     const { id } = req.params;
     const userById = await User.findById(id).populate("events review");
     if (userById) {
@@ -317,7 +361,7 @@ const getById = async (req, res, next) => {
     }
   } catch (error) {
     return next(error);
-  }
+  } */
 };
 
 //------------------------------ GETBYNAME ------------------------------

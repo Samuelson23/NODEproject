@@ -1,4 +1,6 @@
+const isAdmin = require("../../middleware/auth.middleware");
 const { upload } = require("../../middleware/files.middleware");
+
 const {
   register,
   getAll,
@@ -28,5 +30,7 @@ userRoutes.delete("/deleteUser", deleteUser);
 userRoutes.get("/name/:name", getByName);
 userRoutes.get("/", getAll);
 userRoutes.get("/:id", getById);
+
+userRoutes.post("/createEvent", createEvent);
 
 module.exports = userRoutes;
