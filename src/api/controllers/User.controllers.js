@@ -1,4 +1,4 @@
-const { deleteImgCloudinary } = require("../../middleware/files.middleware");
+const { deleteImgCloudinary, configCloudinary } = require("../../middleware/files.middleware");
 const Review = require("../models/Review.models");
 const Event = require("../models/Event.models");
 const User = require("../models/User.models");
@@ -9,10 +9,10 @@ const bcript = require("bcrypt");
 const randomCode = require("../../utils/randomCode");
 const randomPassword = require("../../utils/randomPass");
 const { generateToken, verifyToken } = require("../../utils/token");
-
+const nodemailer = require("nodemailer");
 const PORT = process.env.PORT;
 const ROUTE = process.env.ROUTE;
-
+configCloudinary();
 dotenv.config();
 
 //------------------------------ REGISTER ------------------------------
@@ -47,7 +47,7 @@ const register = async (req, res, next) => {
       //comprobamos si se ha guardado bien. De ser asi le enviamos el correo de verificacion con el codigo de confirmacion. Todo esto lo hacemos con nodemailer
       if (userSave) {
         const emailDB = process.env.EMAIL;
-        const passwordDB = proces.env.PASSWORD;
+        const passwordDB = process.env.PASSWORD;
 
         //El transporter es el metodo por el cual se envia el correo (serivicio=gmail y los datos de quien lo envia, en este caso el email y pass de nuestra base de datos)
         const transporter = nodemailer.createTransport({
@@ -86,11 +86,11 @@ const register = async (req, res, next) => {
 
       //Si el usuario ya existe en la base de datos lanzamos un error 409 de conflicto, porque ya está registrado y borramos la imagen que nos ha enviado en la request porque se ha subido a Cloudinary
     } else {
-      deleteImgCloudinary(userImage);
+      //deleteImgCloudinary(userImage);
       return res.status(409).json("El usuario ya existe");
     }
   } catch (error) {
-    deleteImgCloudinary(userImage);
+    //deleteImgCloudinary(userImage);
     return next(error);
   }
 };

@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const Schema = mongoose.Schema;
+const bcrypt = require("bcrypt");
 
 const UserSchema = new Schema(
   {
@@ -21,7 +22,7 @@ const UserSchema = new Schema(
       unique: true,
       validate: [validator.isEmail, "Email not valid"],
     },
-    password: { type: String, required: true, trim: true, validate: [validator.isStrongPassword] },
+    password: { type: String, required: true, trim: true },
     imagen: { type: String },
     confirmationCode: { type: String, required: true },
     check: { type: Boolean, default: false },
@@ -38,6 +39,7 @@ UserSchema.pre("save", async function (next) {
     this.password = await bcrypt.hash(this.password, 10);
     next();
   } catch (error) {
+    console.log(error);
     next("Error hashing password", error);
   }
 });

@@ -13,11 +13,10 @@ const {
   addToEvent,
 } = require("../controllers/User.controllers");
 
-const express = require("express");
+const express = require("express").Router();
 
-const userRoutes = express.Router();
+const userRoutes = express;
 
-userRoutes.post = ("/register", register);
-userRoutes.get = ("/getEntro", console.log("entro"));
-console.log(userRoutes);
+userRoutes.post("/register", register);
+
 module.exports = userRoutes;
