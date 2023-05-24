@@ -36,7 +36,16 @@ const getByName = async (req, res, next) => {
 
 const getById = async (req, res, next) => {
   try {
-  } catch (error) {}
+    const { id } = req.params;
+    const reviewById = await Review.findById(id).populate("event review");
+    if (reviewById) {
+      return res.status(200).json(reviewById);
+    } else {
+      return res.status(404).json("Not found review by id");
+    }
+  } catch (error) {
+    return next(error);
+  }
 };
 
 module.exports = { deleteEvent, getAll, getById, getByName };
