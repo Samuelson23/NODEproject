@@ -14,7 +14,8 @@ const {
   deleteUser,
   createEvent,
   addToEvent,
-  createReview
+  createReview,
+  addReview
 } = require("../controllers/User.controllers");
 
 const express = require("express").Router();
@@ -36,5 +37,6 @@ userRoutes.post("/createEvent", createEvent);
 userRoutes.post("/addtoEvent", addToEvent);
 
 userRoutes.post("/createReview", createReview);
+userRoutes.post("/addReview", addReview);
 
 module.exports = userRoutes;

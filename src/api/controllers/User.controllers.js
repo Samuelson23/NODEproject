@@ -308,6 +308,7 @@ const createEvent = async (req, res, next) => {
 //------------------------------ ADD TO EVENT ------------------------------
 //--------------------------------------------------------------------------
 
+
 const addToEvent = async (req, res, next) => {
   try {
     const { email, events } = req.body;
@@ -371,6 +372,49 @@ const createReview = async (req, res, next) => {
     return next(error);
   }
 };
+
+//------------------------------ ADD REVIEW ------------------------------
+//--------------------------------------------------------------------------
+const addReview = async (req, res, next) => {
+  try {
+    const { email, events, eventId, description, userId, points } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json("No existe el usuario");
+    }
+
+    const newReview = new Review({
+      event: event._id,
+      description: description,
+      user: userId,
+      points: points,
+    });
+
+    const savedReview = await newReview.save();
+
+    if (savedReview) {
+      const event = await Event.findById(eventId);
+      if (!event) {
+      return res.status(404).json("El evento no existe");
+      }
+
+      await User.findByIdAndUpdate(user._id, {
+        $push: { review: savedReview._id },
+      });
+
+      await Event.findByIdAndUpdate(eventId, {
+        $push: { review: savedReview._id },
+      });
+      return res.status(200).json(savedReview);
+    } else {
+      return res.status(404).json("No se ha creado correctamente la reseña");
+    }
+  } catch (error) {
+    return next(error);
+  }
+};
+
 
 //------------------------------ GETALL ------------------------------
 //--------------------------------------------------------------------
@@ -436,4 +480,5 @@ module.exports = {
   createEvent,
   addToEvent,
   createReview,
+  addReview
 };
