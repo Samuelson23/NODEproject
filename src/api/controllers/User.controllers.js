@@ -435,4 +435,5 @@ module.exports = {
   deleteUser,
   createEvent,
   addToEvent,
+  createReview,
 };

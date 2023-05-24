@@ -47,7 +47,7 @@ const deleteEvent = async (req, res, next) => {
 
 const getAll = async (req, res, next) => {
   try {
-    const allEvent = await Event.find();
+    const allEvent = await Event.find().populate("user");
     if (allEvent) {
       return res.status(200).json(allEvent);
     } else {
@@ -79,13 +79,13 @@ const getByName = async (req, res, next) => {
 
 const getById = async (req, res, next) => {
   try {
-    const {id} = req.params;
-    const eventById = await Event.findById(id)
+    const { id } = req.params;
+    const eventById = await Event.findById(id);
 
     if (eventById) {
       return res.status(200).json(eventById);
     } else {
-       return res.status(404).json("not found eventById");
+      return res.status(404).json("not found eventById");
     }
   } catch (error) {
     return next(error);
