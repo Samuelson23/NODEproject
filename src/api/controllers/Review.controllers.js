@@ -93,11 +93,11 @@ const getAll = async (req, res, next) => {
 const getByName = async (req, res, next) => {
   try {
     const { name } = req.params;
-    const ReviewByName = await Review.find({ name });
-    if (ReviewByName) {
-      return res.status(200).json(ReviewByName);
+    const getByName = await Event.find({ name });
+    if (getByName) {
+      return res.status(200).json(getByName);
     } else {
-      return res.status(404).json("Not found Review by name");
+      return res.status(404).json("Not found get by name");
     }
   } catch (error) {
     return next(error);
