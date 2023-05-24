@@ -271,40 +271,6 @@ const logout = async (req, res, next) => {
   } catch (error) {}
 };
 
-//------------------------------ CREATE EVENT ------------------------------
-//--------------------------------------------------------------------------
-
-const createEvent = async (req, res, next) => {
-  try {
-    const { email, evName, description, location, data, hour } = req.body;
-    const user = await User.findOne({ email });
-    console.log(user);
-    const filterBody = {};
-
-    if (user.role !== "admin") {
-      return res.status(404).json("No tienes permisos de administrador");
-    } else {
-      const newEvent = new Event({
-        name: evName,
-        location: location,
-        data: data,
-        hour: hour,
-        description: description,
-      });
-      const saveEvent = await newEvent.save();
-      console.log(saveEvent);
-
-      if (saveEvent) {
-        return res.status(200).json(saveEvent);
-      } else {
-        return res.status(404).json("No se ha creado bien el evento ");
-      }
-    }
-  } catch (error) {
-    return next(error);
-  }
-};
-
 //------------------------------ ADD TO EVENT ------------------------------
 //--------------------------------------------------------------------------
 
@@ -339,82 +305,6 @@ const addToEvent = async (req, res, next) => {
     return next(error);
   }
 };
-
-//------------------------------ CREATEREVIEW ------------------------
-//--------------------------------------------------------------------
-const createReview = async (req, res, next) => {
-  try {
-    const { eventId, description, userId, points } = req.body;
-
-    // Verifica si el evento existe
-    const event = await Event.findById(eventId);
-    if (!event) {
-      return res.status(404).json("El evento no existe");
-    }
-
-    // Crea la nueva reseña
-    const newReview = new Review({
-      event: event._id,
-      description: description,
-      user: userId,
-      points: points,
-    });
-
-    // Guarda la reseña en la base de datos
-    const savedReview = await newReview.save();
-
-    if (savedReview) {
-      return res.status(200).json(savedReview);
-    } else {
-      return res.status(404).json("No se ha creado correctamente la reseña");
-    }
-  } catch (error) {
-    return next(error);
-  }
-};
-
-//------------------------------ ADD REVIEW ------------------------------
-//--------------------------------------------------------------------------
-const addReview = async (req, res, next) => {
-  try {
-    const { email, events, eventId, description, userId, points } = req.body;
-
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json("No existe el usuario");
-    }
-
-    const newReview = new Review({
-      event: event._id,
-      description: description,
-      user: userId,
-      points: points,
-    });
-
-    const savedReview = await newReview.save();
-
-    if (savedReview) {
-      const event = await Event.findById(eventId);
-      if (!event) {
-      return res.status(404).json("El evento no existe");
-      }
-
-      await User.findByIdAndUpdate(user._id, {
-        $push: { review: savedReview._id },
-      });
-
-      await Event.findByIdAndUpdate(eventId, {
-        $push: { review: savedReview._id },
-      });
-      return res.status(200).json(savedReview);
-    } else {
-      return res.status(404).json("No se ha creado correctamente la reseña");
-    }
-  } catch (error) {
-    return next(error);
-  }
-};
-
 
 //------------------------------ GETALL ------------------------------
 //--------------------------------------------------------------------
@@ -479,6 +369,5 @@ module.exports = {
   deleteUser,
   createEvent,
   addToEvent,
-  createReview,
-  addReview
+  createReview
 };

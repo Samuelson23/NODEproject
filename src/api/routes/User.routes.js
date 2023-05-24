@@ -37,6 +37,5 @@ userRoutes.post("/createEvent", createEvent);
 userRoutes.post("/addtoEvent", addToEvent);
 
 userRoutes.post("/createReview", createReview);
-userRoutes.post("/addReview", addReview);
 
 module.exports = userRoutes;
