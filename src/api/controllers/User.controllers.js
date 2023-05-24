@@ -19,7 +19,6 @@ dotenv.config();
 //----------------------------------------------------------------------
 
 const register = async (req, res, next) => {
-  console.log(req.body);
   let userImage = req.file?.path;
   try {
     //Creamos el codigo de verificacion con la funcion importada randomCode() y nos guardamos el name y email que nos pasa por la request
@@ -100,11 +99,14 @@ const register = async (req, res, next) => {
 //---------------------------------------------------------------------
 const resendCode = async (req, res, next) => {
   try {
-    const { emailUser } = req.body;
+    const { email } = req.body;
+
     const emailDB = process.env.EMAIL;
     const passDB = process.env.PASSWORD;
-    const userToSendCode = await User.findOne({ emailUser });
+    const userToSendCode = await User.findOne({ email });
+    console.log(userToSendCode);
     const confirmationCode = userToSendCode.confirmationCode;
+    console.log("107----------", confirmationCode);
     if (userToSendCode) {
       const transporter = nodemailer.createTransport({
         service: "gmail",
@@ -115,7 +117,7 @@ const resendCode = async (req, res, next) => {
       });
       const mailOptions = {
         from: emailDB,
-        to: emailUser,
+        to: email,
         subject: "Confirmation code",
         text: `Hola! Te enviamos de nuevo tu codigo de confirmacion: ${confirmationCode}`,
       };
@@ -136,25 +138,24 @@ const resendCode = async (req, res, next) => {
 //------------------------------ NEW CODE -----------------------------
 //---------------------------------------------------------------------
 
-//------------------------------ CHECK CODE --------------------------
+//------------------------------ CHECK USER --------------------------
 //---------------------------------------------------------------------
 const checkUser = async (req, res, next) => {
   try {
     const { email, confirmationCode } = req.body;
-    const checkUser = User.findOne({ email });
+    const checkUser = await User.findOne({ email });
     console.log("145---------", confirmationCode);
     console.log(checkUser.confirmationCode);
     if (!checkUser) {
       return res.status(404).json("Ese usuario no existe");
     } else {
-      if (confirmationCode === checkUser.confirmationCode) {
+      if (confirmationCode == checkUser.confirmationCode) {
         await checkUser.updateOne({ check: true });
-        const updateUser = User.findOne({ email });
+        const updateUser = await User.findOne({ email });
         return res.status(200).json({
-          testCheck: updateUser === true ? true : false,
+          testCheck: updateUser.check === true ? true : false,
         });
       } else {
-        resendCode();
         return res
           .status(404)
           .json(
@@ -442,11 +443,7 @@ const getAll = async (req, res, next) => {
 const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
-<<<<<<< HEAD
-    const userById = await User.findById(id).populate("events");
-=======
-    const userById = await User.findById(id).populate("event");
->>>>>>> 72b8a281e2fbee3b4651453146c16304507bb4a5
+    const userById = await User.findById(id).populate("event review");
     if (userById) {
       return res.status(200).json(userById);
     } else {
