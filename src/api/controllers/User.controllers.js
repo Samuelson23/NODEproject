@@ -98,7 +98,73 @@ const register = async (req, res, next) => {
 
 //------------------------------ RESEND CODE --------------------------
 //---------------------------------------------------------------------
-const resendCode = async (req, res, next) => {};
+const resendCode = async (req, res, next) => {
+  try {
+    const { emailUser } = req.body;
+    const emailDB = process.env.EMAIL;
+    const passDB = process.env.PASSWORD;
+    const userToSendCode = await User.findOne({ emailUser });
+    const confirmationCode = userToSendCode.confirmationCode;
+    if (userToSendCode) {
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: emailDB,
+          pass: passDB,
+        },
+      });
+      const mailOptions = {
+        from: emailDB,
+        to: emailUser,
+        subject: "Confirmation code",
+        text: `Hola! Te enviamos de nuevo tu codigo de confirmacion: ${confirmationCode}`,
+      };
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log("Email sent: " + info.response);
+          return res.status(200).json({ resendCode: true });
+        }
+      });
+    }
+  } catch (error) {
+    return next(error);
+  }
+};
+
+//------------------------------ NEW CODE -----------------------------
+//---------------------------------------------------------------------
+
+//------------------------------ CHECK CODE --------------------------
+//---------------------------------------------------------------------
+const checkUser = async (req, res, next) => {
+  try {
+    const { email, confirmationCode } = req.body;
+    const checkUser = User.findOne({ email });
+
+    if (!checkUser) {
+      return res.status(404).json("Ese usuario no existe");
+    } else {
+      if (confirmationCode === checkUser.confirmationCode) {
+        await checkUser.updateOne({ check: true });
+        const updateUser = User.findOne({ email });
+        return res.status(200).json({
+          testCheck: updateUser === true ? true : false,
+        });
+      } else {
+        resendCode();
+        return res
+          .status(404)
+          .json(
+            "El codigo introducido no es valido. Te hemos enviado el codigo de nuevo a tu correo."
+          );
+      }
+    }
+  } catch (error) {
+    return next(error);
+  }
+};
 
 //------------------------------ FORGOT PASS --------------------------
 //---------------------------------------------------------------------
@@ -449,4 +515,6 @@ module.exports = {
   addToEvent,
   createReview,
   addReview,
+  resendCode,
+  checkCode,
 };
