@@ -55,13 +55,13 @@ const createReview = async (req, res, next) => {
 const deleteReview = async (req, res, next) => {
   try {
     const { id, image } = req.params;
-    await Event.findByIdAndDelete(id);
+    await Review.findByIdAndDelete(id);
 
-    if (await Event.findById(id)) {
-      return res.status(404).json("El evento no se ha borrado");
+    if (await Review.findById(id)) {
+      return res.status(404).json("La Review no se ha borrado");
     } else {
       deleteImgCloudinary(image);
-      return res.status(200).json("Evento borrado");
+      return res.status(200).json("Review borrada");
     }
   } catch (error) {
     return next(error);
