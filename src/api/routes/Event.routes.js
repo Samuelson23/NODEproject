@@ -10,7 +10,7 @@ const {
 const express = require("express");
 const eventRoutes = express.Router();
 
-eventRoutes.post("/", createEvent);
+eventRoutes.post("/createEvent", createEvent);
 eventRoutes.post("/updateEvent", updateEvent);
 eventRoutes.post("/deleteEvent", deleteEvent);
 eventRoutes.get("/:id", getById);

@@ -10,7 +10,10 @@
     "format:write": "prettier --write",
     "test": "jest --runInBand --detectOpenHandles --forceExit",
     "lint:check": "eslint",
-    "lint:fix": "eslint src --fix --cache"
+    "lint:fix": "eslint src --fix --cache",
+    "lint": "eslint . ",
+    "format": "prettier --check --ignore-path .gitignore .",
+    "format:fix": "prettier --write --ignore-path .gitignore ."
   },
   "keywords": [],
   "author": "",

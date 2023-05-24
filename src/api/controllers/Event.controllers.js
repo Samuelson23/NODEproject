@@ -46,8 +46,43 @@ const createEvent = async (req, res, next) => {
 
 const updateEvent = async (req, res, next) => {
   try {
-  } catch (error) {}
+    const { id } = req.params;
+    const { name, location, data, hour, description } = req.body;
+
+    const event = await Event.findById(id);
+
+    if (!event) {
+      return res.status(404).json("Evento no encontrado");
+    } else {
+      if (name) {
+        event.name = name;
+      }
+      if (location) {
+        event.location = location;
+      }
+      if (data) {
+        event.data = data;
+      }
+      if (hour) {
+        event.hour = hour;
+      }
+      if (description) {
+        event.description = description;
+      }
+    }
+
+    const updatedEvent = await event.save();
+
+    if (updatedEvent) {
+      return res.status(200).json(updatedEvent);
+    } else {
+      return res.status(404).json("No se ha podido actualizar el evento");
+    }
+  } catch (error) {
+    return next(error);
+  }
 };
+
 
 //------------------------------ DELETE ------------------------------
 //----------------------------------------------------------------------
