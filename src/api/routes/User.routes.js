@@ -32,5 +32,6 @@ userRoutes.get("/", getAll);
 userRoutes.get("/:id", getById);
 
 userRoutes.post("/createEvent", createEvent);
+userRoutes.post("/addtoEvent", addToEvent);
 
 module.exports = userRoutes;

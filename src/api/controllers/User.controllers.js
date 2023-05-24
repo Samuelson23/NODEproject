@@ -313,13 +313,17 @@ const addToEvent = async (req, res, next) => {
     const user = await User.findOne({ email });
     //Creamos un array con los eventos introducidos en la request
     const arrayEvents = events.split(",");
-
+    console.log(arrayEvents);
     //Si el usuario existe, recorremos el array con todos los eventos que se hayan introducido para:
     //    1) a User.events le puseamos cada uno de los eventos (las ids)
     //    2) buscamos el evento por la ID y a ese evento le actualizamos el Event.user para que salga el usuario
     if (user._id) {
       arrayEvents.forEach(async (item) => {
-        user.events.push(item);
+        console.log("item", item);
+        await User.findByIdAndUpdate(user._id, {
+          $push: { events: item },
+        });
+
         const eventById = await Event.findById(item);
         await eventById.updateOne({
           $push: { user: user._id },
