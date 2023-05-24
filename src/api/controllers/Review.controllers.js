@@ -52,9 +52,10 @@ const createReview = async (req, res, next) => {
 
 //------------------------------ DELETE ------------------------------
 //----------------------------------------------------------------------
-
+// Modificado 
 const deleteEvent = async (req, res, next) => {
   try {
+    
     const { id, image } = req.params;
     await Event.findByIdAndDelete(id);
 
