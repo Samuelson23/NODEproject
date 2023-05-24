@@ -442,11 +442,7 @@ const getAll = async (req, res, next) => {
 const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
-<<<<<<< HEAD
     const userById = await User.findById(id).populate("events");
-=======
-    const userById = await User.findById(id).populate("event");
->>>>>>> 72b8a281e2fbee3b4651453146c16304507bb4a5
     if (userById) {
       return res.status(200).json(userById);
     } else {
