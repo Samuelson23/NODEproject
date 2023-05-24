@@ -110,11 +110,11 @@ const getByName = async (req, res, next) => {
 const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const reviewById = await Review.findById(id).populate("event review");
-    if (reviewById) {
-      return res.status(200).json(reviewById);
+    const getById = await Event.findById(id).populate("event all");
+    if (getById) {
+      return res.status(200).json(getById);
     } else {
-      return res.status(404).json("Not found review by id");
+      return res.status(404).json("Not found get by id");
     }
   } catch (error) {
     return next(error);
