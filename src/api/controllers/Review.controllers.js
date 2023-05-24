@@ -57,7 +57,7 @@ const deleteReview = async (req, res, next) => {
     const { id } = req.params;
     const reviewToDelete = await Review.findByIdAndDelete(id);
 
-    if (reviewToDelete) {
+    if (await Review.find(id)) {
       return res.status(404).json("La Review no se ha borrado");
     } else {
       return res.status(200).json("Review borrada");
