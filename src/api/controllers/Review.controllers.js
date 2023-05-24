@@ -53,9 +53,20 @@ const createReview = async (req, res, next) => {
 //------------------------------ DELETE ------------------------------
 //----------------------------------------------------------------------
 
-const deleteReview = async (req, res, next) => {
+const deleteEvent = async (req, res, next) => {
   try {
-  } catch (error) {}
+    const { id, image } = req.params;
+    await Event.findByIdAndDelete(id);
+
+    if (await Event.findById(id)) {
+      return res.status(404).json("El evento no se ha borrado");
+    } else {
+      deleteImgCloudinary(image);
+      return res.status(200).json("Evento borrado");
+    }
+  } catch (error) {
+    return next(error);
+  }
 };
 
 //------------------------------ GETBYALL ------------------------------
