@@ -1,17 +1,12 @@
-const { deleteImgCloudinary } = require("../../middleware/files.middleware");
 const Review = require("../models/Review.models");
 const Event = require("../models/Event.models");
 const User = require("../models/User.models");
-const validator = require("validator");
-const mongoose = require("mongoose");
-const dotenv = require("dotenv");
-const bcript = require("bcrypt");
 
 //------------------------------ CREATE REVIEW ------------------------------
 //--------------------------------------------------------------------------
 const createReview = async (req, res, next) => {
   try {
-    const { email, events, eventId, description, userId, points } = req.body;
+    const { email, eventId, description, userId, points } = req.body;
 
     const user = await User.findOne({ email });
     if (!user) {
@@ -55,7 +50,7 @@ const createReview = async (req, res, next) => {
 const deleteReview = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const reviewToDelete = await Review.findByIdAndDelete(id);
+    await Review.findByIdAndDelete(id);
 
     if (await Review.find(id)) {
       return res.status(404).json("La Review no se ha borrado");
@@ -73,7 +68,7 @@ const deleteReview = async (req, res, next) => {
 const getAll = async (req, res, next) => {
   try {
     const { all } = req.params;
-    const getByAll = await Review.find({ all });
+    const getByAll = await Review.find({ all }).populate("event user");
     if (getByAll) {
       return res.status(200).json(getByAll);
     } else {

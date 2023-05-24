@@ -1,17 +1,14 @@
 const { deleteImgCloudinary, configCloudinary } = require("../../middleware/files.middleware");
+const randomPassword = require("../../utils/randomPass");
+const { generateToken } = require("../../utils/token");
+const randomCode = require("../../utils/randomCode");
 const Review = require("../models/Review.models");
 const Event = require("../models/Event.models");
 const User = require("../models/User.models");
-const validator = require("validator");
-const mongoose = require("mongoose");
+const nodemailer = require("nodemailer");
 const dotenv = require("dotenv");
 const bcrypt = require("bcrypt");
-const randomCode = require("../../utils/randomCode");
-const randomPassword = require("../../utils/randomPass");
-const { generateToken, verifyToken } = require("../../utils/token");
-const nodemailer = require("nodemailer");
-const PORT = process.env.PORT;
-const ROUTE = process.env.ROUTE;
+
 configCloudinary();
 dotenv.config();
 
@@ -67,7 +64,7 @@ const register = async (req, res, next) => {
         };
 
         //Enviamos el correo y comprobamos que no haya un error. Si hay un error devolvemos un 404 y si no hay ningun error devolvemos un 200 con el usuario y su codigo de confirmacion
-        transporter.sendMail(mailOptions, function (error, info) {
+        transporter.sendMail(mailOptions, function (error) {
           if (error) {
             console.log(error);
             return res.status(404).json({
@@ -202,7 +199,7 @@ const forgotPassword = async (req, res, next) => {
         text: `User: ${userDB.name} tu nueva clave de acceso es: ${newPassword}`,
       };
 
-      transporter.sendMail(mailOptions, async function (error, info) {
+      transporter.sendMail(mailOptions, async function (error) {
         if (error) {
           console.log(error);
           return res.status(404).json("No se ha enviado el correo");
@@ -368,11 +365,6 @@ const login = async (req, res, next) => {
 //------------------------------ LOGOUT ------------------------------
 //--------------------------------------------------------------------
 
-const logout = async (req, res, next) => {
-  try {
-  } catch (error) {}
-};
-
 //------------------------------ ADD TO EVENT ------------------------------
 //--------------------------------------------------------------------------
 
@@ -411,7 +403,7 @@ const addToEvent = async (req, res, next) => {
 //--------------------------------------------------------------------------
 const addReview = async (req, res, next) => {
   try {
-    const { email, events, eventId, description, userId, points } = req.body;
+    const { email, eventId, description, userId, points } = req.body;
 
     const user = await User.findOne({ email });
     if (!user) {
@@ -512,4 +504,5 @@ module.exports = {
   addToEvent,
   resendCode,
   checkUser,
+  addReview,
 };

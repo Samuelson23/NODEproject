@@ -1,6 +1,4 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
-const validator = require("validator");
 
 const ReviewSchema = new mongoose.Schema({
   event: [{ type: mongoose.Schema.Types.ObjectId, ref: "Event" }],

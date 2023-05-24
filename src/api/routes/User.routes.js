@@ -1,4 +1,3 @@
-const isAdmin = require("../../middleware/auth.middleware");
 const { upload } = require("../../middleware/files.middleware");
 
 const {

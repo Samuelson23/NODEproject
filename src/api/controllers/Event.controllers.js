@@ -1,11 +1,6 @@
-const { deleteImgCloudinary } = require("../../middleware/files.middleware");
 const Review = require("../models/Review.models");
 const Event = require("../models/Event.models");
 const User = require("../models/User.models");
-const validator = require("validator");
-const mongoose = require("mongoose");
-const dotenv = require("dotenv");
-const bcript = require("bcrypt");
 
 //------------------------------ CREATE EVENT ------------------------------
 //--------------------------------------------------------------------------
@@ -15,7 +10,6 @@ const createEvent = async (req, res, next) => {
     const { email, evName, description, location, data, hour } = req.body;
     const user = await User.findOne({ email });
     console.log(user);
-    const filterBody = {};
 
     if (user.role !== "admin") {
       return res.status(404).json("No tienes permisos de administrador");
@@ -83,14 +77,23 @@ const updateEvent = async (req, res, next) => {
   }
 };
 
-
 //------------------------------ DELETE ------------------------------
 //----------------------------------------------------------------------
 
 const deleteEvent = async (req, res, next) => {
   try {
     const { id } = req.params;
-    await Event.findByIdAndDelete(id);
+    //await Event.findByIdAndDelete(id);
+    const event = await Event.findById(id);
+    console.log("--------", event);
+    if (event) {
+      event.review.forEach(async (item) => {
+        await Review.findByIdAndDelete(item);
+      });
+      await Event.findByIdAndDelete(id);
+    } else {
+      return res.status(404).json("el evento no existe");
+    }
 
     if (await Event.findById(id)) {
       return res.status(404).json("El evento no se ha borrado");

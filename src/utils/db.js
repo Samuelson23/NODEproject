@@ -13,12 +13,10 @@ const connect = async () => {
     });
 
     const { name, host } = dataBase.connection;
-    console.log(name,host)
-    console.log(
-      `Conectada la DB 👌  en el host: ${host} con el nombre: ${name}`
-    );
+    console.log(name, host);
+    console.log(`Conectada la DB 👌  en el host: ${host} con el nombre: ${name}`);
   } catch (error) {
-    console.log(error)
+    console.log(error);
     console.log("No se ha conectado la db❌");
   }
 };

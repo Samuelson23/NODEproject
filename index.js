@@ -9,7 +9,7 @@ dotenv.config();
 configCloudinary();
 const ROUTE = process.env.ROUTE;
 const PORT = process.env.PORT;
-console.log(PORT)
+console.log(PORT);
 connect();
 
 server.use(
