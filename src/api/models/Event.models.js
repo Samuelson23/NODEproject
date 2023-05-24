@@ -10,7 +10,7 @@ const EventSchema = new Schema(
     hour: { type: String, required: true },
     description: { type: String, required: true },
     user: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    preview: [{ type: mongoose.Schema.Types.ObjectId, ref: "Preview" }],
+    review: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],
   },
   {
     timestamps: true,
