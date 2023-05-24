@@ -443,7 +443,11 @@ const getAll = async (req, res, next) => {
 const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
+<<<<<<< HEAD
     const userById = await User.findById(id).populate("event review");
+=======
+    const userById = await User.findById(id).populate("events");
+>>>>>>> 7fadf2a15bc538b731048d248a510dd80dde791f
     if (userById) {
       return res.status(200).json(userById);
     } else {
