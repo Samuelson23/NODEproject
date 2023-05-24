@@ -127,7 +127,7 @@ const forgotPassword = async (req, res, next) => {
         from: emailDB,
         to: emailUser,
         subject: "Nuevo acceso",
-        description: `User: ${userDB.name} tu nueva clave de acceso es: ${newPassword}`,
+        text: `User: ${userDB.name} tu nueva clave de acceso es: ${newPassword}`,
       };
 
       transporter.sendMail(mailOptions, async function (error, info) {
@@ -308,7 +308,6 @@ const createEvent = async (req, res, next) => {
 //------------------------------ ADD TO EVENT ------------------------------
 //--------------------------------------------------------------------------
 
-
 const addToEvent = async (req, res, next) => {
   try {
     const { email, events } = req.body;
@@ -396,7 +395,7 @@ const addReview = async (req, res, next) => {
     if (savedReview) {
       const event = await Event.findById(eventId);
       if (!event) {
-      return res.status(404).json("El evento no existe");
+        return res.status(404).json("El evento no existe");
       }
 
       await User.findByIdAndUpdate(user._id, {
@@ -414,7 +413,6 @@ const addReview = async (req, res, next) => {
     return next(error);
   }
 };
-
 
 //------------------------------ GETALL ------------------------------
 //--------------------------------------------------------------------
@@ -480,5 +478,5 @@ module.exports = {
   createEvent,
   addToEvent,
   createReview,
-  addReview
+  addReview,
 };
