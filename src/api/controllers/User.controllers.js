@@ -142,7 +142,8 @@ const checkUser = async (req, res, next) => {
   try {
     const { email, confirmationCode } = req.body;
     const checkUser = User.findOne({ email });
-
+    console.log("145---------", confirmationCode);
+    console.log(checkUser.confirmationCode);
     if (!checkUser) {
       return res.status(404).json("Ese usuario no existe");
     } else {
@@ -257,10 +258,12 @@ const changePassword = async (req, res, next) => {
       if (bcrypt.compareSync(newPassword, userUpdate.password)) {
         return res.status(200).json({
           updateUser: true,
+          updatePassword: true,
         });
       } else {
         return res.status(404).json({
           updateUser: false,
+          updatePassword: false,
         });
       }
     } else {
@@ -439,7 +442,7 @@ const getAll = async (req, res, next) => {
 const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const userById = await User.findById(id).populate("event review");
+    const userById = await User.findById(id).populate("event");
     if (userById) {
       return res.status(200).json(userById);
     } else {
