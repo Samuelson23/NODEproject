@@ -108,7 +108,7 @@ const deleteEvent = async (req, res, next) => {
 
 const getAll = async (req, res, next) => {
   try {
-    const allEvent = await Event.find().populate("user");
+    const allEvent = await Event.find().populate("user review");
     if (allEvent) {
       return res.status(200).json(allEvent);
     } else {
@@ -125,7 +125,7 @@ const getAll = async (req, res, next) => {
 const getByName = async (req, res, next) => {
   try {
     const { name } = req.params;
-    const eventByName = await Event.find({ name });
+    const eventByName = await Event.find({ name }).populate("user review");
     if (eventByName) {
       return res.status(200).json(eventByName);
     } else {
@@ -141,7 +141,7 @@ const getByName = async (req, res, next) => {
 const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const eventById = await Event.findById(id);
+    const eventById = await Event.findById(id).populate("user review");
 
     if (eventById) {
       return res.status(200).json(eventById);

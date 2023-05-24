@@ -54,13 +54,12 @@ const createReview = async (req, res, next) => {
 // Modificado
 const deleteReview = async (req, res, next) => {
   try {
-    const { id, image } = req.params;
-    await Review.findByIdAndDelete(id);
+    const { id } = req.params;
+    const reviewToDelete = await Review.find(id);
 
     if (await Review.findById(id)) {
       return res.status(404).json("La Review no se ha borrado");
     } else {
-      deleteImgCloudinary(image);
       return res.status(200).json("Review borrada");
     }
   } catch (error) {
@@ -74,28 +73,11 @@ const deleteReview = async (req, res, next) => {
 const getAll = async (req, res, next) => {
   try {
     const { all } = req.params;
-    const getByAll = await Event.find({ all });
+    const getByAll = await Review.find({ all });
     if (getByAll) {
       return res.status(200).json(getByAll);
     } else {
       return res.status(404).json("Not found get by all");
-    }
-  } catch (error) {
-    return next(error);
-  }
-};
-
-//------------------------------ GETBYNAME ------------------------------
-//----------------------------------------------------------------------
-
-const getByName = async (req, res, next) => {
-  try {
-    const { name } = req.params;
-    const getByName = await Event.find({ name });
-    if (getByName) {
-      return res.status(200).json(getByName);
-    } else {
-      return res.status(404).json("Not found get by name");
     }
   } catch (error) {
     return next(error);
@@ -108,7 +90,7 @@ const getByName = async (req, res, next) => {
 const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const getById = await Event.findById(id).populate("event all");
+    const getById = await Review.findById(id).populate("event user");
     if (getById) {
       return res.status(200).json(getById);
     } else {
@@ -119,4 +101,4 @@ const getById = async (req, res, next) => {
   }
 };
 
-module.exports = { createReview, deleteReview, getAll, getById, getByName };
+module.exports = { createReview, deleteReview, getAll, getById };
