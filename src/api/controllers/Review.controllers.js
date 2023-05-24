@@ -62,8 +62,17 @@ const deleteReview = async (req, res, next) => {
 //----------------------------------------------------------------------
 
 const getAll = async (req, res, next) => {
-  try {
-  } catch (error) {}
+    try {
+      const { all } = req.params;
+      const getByAll = await Review.find({ all });
+      if (getByAll) {
+        return res.status(200).json(getByAll);
+      } else {
+        return res.status(404).json("Not found get by all");
+      }
+    } catch (error) {
+      return next(error);
+    }
 };
 
 //------------------------------ GETBYNAME ------------------------------
