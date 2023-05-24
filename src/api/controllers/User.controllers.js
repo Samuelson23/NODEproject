@@ -445,4 +445,8 @@ module.exports = {
   addToEvent,
   createReview,
   addReview,
+<<<<<<< HEAD
+=======
+  createReview
+>>>>>>> 54f49df1fe70b954ea173fb488594bee79b435ca
 };
