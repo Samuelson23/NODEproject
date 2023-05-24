@@ -280,7 +280,35 @@ const changePassword = async (req, res, next) => {
 
 const updateUser = async (req, res, next) => {
   try {
-  } catch (error) {}
+    const { id } = req.params;
+    const { name, image, events } = req.body;
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json("Usuario no encontrado");
+    } else {
+      if (name) {
+        user.name = name;
+      }
+      if (image) {
+        user.image = image;
+      }
+      if (events) {
+        user.events = events;
+      }
+    }
+
+    const updatedUser = await user.save();
+
+    if (updatedUser) {
+      return res.status(200).json(updatedUser);
+    } else {
+      return res.status(404).json("No se ha podido actualizar el usuario");
+    }
+  } catch (error) {
+    return next(error);
+  }
 };
 
 //------------------------------ DELETE ------------------------------
