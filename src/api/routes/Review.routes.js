@@ -13,7 +13,7 @@ const express = require("express").Router();
 
 const reviewRoutes = express;
 
-reviewRoutes.delete("/deleteUser", deleteReview);
+reviewRoutes.delete("/deleteReview", deleteReview);
 reviewRoutes.get("/name/:name", getByName);
 reviewRoutes.get("/", getAll);
 reviewRoutes.get("/:id", getById);

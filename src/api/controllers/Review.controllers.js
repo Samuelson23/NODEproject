@@ -71,7 +71,16 @@ const getAll = async (req, res, next) => {
 
 const getByName = async (req, res, next) => {
   try {
-  } catch (error) {}
+    const { name } = req.params;
+    const ReviewByName = await Review.find({ name });
+    if (ReviewByName) {
+      return res.status(200).json(ReviewByName);
+    } else {
+      return res.status(404).json("Not found Review by name");
+    }
+  } catch (error) {
+    return next(error);
+  }
 };
 
 //------------------------------ GETBYID ------------------------------

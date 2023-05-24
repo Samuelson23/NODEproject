@@ -449,5 +449,4 @@ module.exports = {
   addToEvent,
   createReview,
   addReview,
-  createReview,
 };
