@@ -271,40 +271,6 @@ const logout = async (req, res, next) => {
   } catch (error) {}
 };
 
-//------------------------------ CREATE EVENT ------------------------------
-//--------------------------------------------------------------------------
-
-const createEvent = async (req, res, next) => {
-  try {
-    const { email, evName, description, location, data, hour } = req.body;
-    const user = await User.findOne({ email });
-    console.log(user);
-    const filterBody = {};
-
-    if (user.role !== "admin") {
-      return res.status(404).json("No tienes permisos de administrador");
-    } else {
-      const newEvent = new Event({
-        name: evName,
-        location: location,
-        data: data,
-        hour: hour,
-        description: description,
-      });
-      const saveEvent = await newEvent.save();
-      console.log(saveEvent);
-
-      if (saveEvent) {
-        return res.status(200).json(saveEvent);
-      } else {
-        return res.status(404).json("No se ha creado bien el evento ");
-      }
-    }
-  } catch (error) {
-    return next(error);
-  }
-};
-
 //------------------------------ ADD TO EVENT ------------------------------
 //--------------------------------------------------------------------------
 
@@ -339,6 +305,7 @@ const addToEvent = async (req, res, next) => {
   }
 };
 
+<<<<<<< HEAD
 //------------------------------ CREATEREVIEW ------------------------
 //--------------------------------------------------------------------
 const createReview = async (req, res, next) => {
@@ -414,6 +381,8 @@ const addReview = async (req, res, next) => {
   }
 };
 
+=======
+>>>>>>> c7e44d099244b3fd50c3ffb084c4947de1a97a11
 //------------------------------ GETALL ------------------------------
 //--------------------------------------------------------------------
 
@@ -477,6 +446,10 @@ module.exports = {
   deleteUser,
   createEvent,
   addToEvent,
+<<<<<<< HEAD
   createReview,
   addReview,
+=======
+  createReview
+>>>>>>> c7e44d099244b3fd50c3ffb084c4947de1a97a11
 };
