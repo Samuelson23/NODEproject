@@ -57,10 +57,10 @@ const deleteReview = async (req, res, next) => {
     const { id } = req.params;
     const reviewToDelete = await Review.findByIdAndDelete(id);
 
-    if (await Review.find(id)) {
-      return res.status(404).json("La Review no se ha borrado");
+    if (!reviewToDelete) {
+      return res.status(200).json("La Review se ha borrado");
     } else {
-      return res.status(200).json("Review borrada");
+      return res.status(404).json("Review no borrada");
     }
   } catch (error) {
     return next(error);
@@ -73,7 +73,7 @@ const deleteReview = async (req, res, next) => {
 const getAll = async (req, res, next) => {
   try {
     const { all } = req.params;
-    const getByAll = await Review.find({ all });
+    const getByAll = await Review.find({ all }).populate("event user");
     if (getByAll) {
       return res.status(200).json(getByAll);
     } else {
