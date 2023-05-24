@@ -26,16 +26,12 @@ userRoutes.post("/register", upload.single("imagen"), register);
 userRoutes.post("/login", login);
 userRoutes.get("/forgotPassword", forgotPassword);
 userRoutes.post("/changePassword", changePassword);
-
 userRoutes.delete("/deleteUser", deleteUser);
 
 userRoutes.get("/name/:name", getByName);
 userRoutes.get("/", getAll);
 userRoutes.get("/:id", getById);
 
-userRoutes.post("/createEvent", createEvent);
 userRoutes.post("/addtoEvent", addToEvent);
-
-userRoutes.post("/createReview", createReview);
 
 module.exports = userRoutes;

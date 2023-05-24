@@ -305,7 +305,6 @@ const addToEvent = async (req, res, next) => {
   }
 };
 
-<<<<<<< HEAD
 //------------------------------ CREATEREVIEW ------------------------
 //--------------------------------------------------------------------
 const createReview = async (req, res, next) => {
@@ -381,8 +380,6 @@ const addReview = async (req, res, next) => {
   }
 };
 
-=======
->>>>>>> c7e44d099244b3fd50c3ffb084c4947de1a97a11
 //------------------------------ GETALL ------------------------------
 //--------------------------------------------------------------------
 
@@ -446,10 +443,7 @@ module.exports = {
   deleteUser,
   createEvent,
   addToEvent,
-<<<<<<< HEAD
   createReview,
   addReview,
-=======
   createReview
->>>>>>> c7e44d099244b3fd50c3ffb084c4947de1a97a11
 };
