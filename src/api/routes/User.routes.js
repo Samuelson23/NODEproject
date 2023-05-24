@@ -9,14 +9,10 @@ const {
   forgotPassword,
   changePassword,
   login,
-  logout,
   updateUser,
   deleteUser,
-  createEvent,
   addToEvent,
-  createReview,
-  addReview,
-  checkCode,
+  checkUser,
   resendCode,
 } = require("../controllers/User.controllers");
 
@@ -29,7 +25,7 @@ userRoutes.post("/login", login);
 userRoutes.get("/forgotPassword", forgotPassword);
 userRoutes.post("/changePassword", changePassword);
 userRoutes.delete("/deleteUser", deleteUser);
-userRoutes.post("/checkCode", checkCode);
+userRoutes.post("/checkUser", checkUser);
 userRoutes.post("/resendCode", resendCode);
 
 userRoutes.get("/name/:name", getByName);
