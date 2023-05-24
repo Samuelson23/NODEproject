@@ -27,7 +27,7 @@ userRoutes.post("/changePassword", changePassword);
 userRoutes.delete("/deleteUser", deleteUser);
 userRoutes.post("/checkUser", checkUser);
 userRoutes.post("/resendCode", resendCode);
-userRoutes.patch("updateUser/:id", updateUser);
+userRoutes.patch("/updateUser/:id", updateUser);
 userRoutes.get("/name/:name", getByName);
 userRoutes.get("/", getAll);
 userRoutes.get("/:id", getById);

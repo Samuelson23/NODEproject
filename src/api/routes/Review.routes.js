@@ -12,7 +12,7 @@ const express = require("express");
 
 const reviewRoutes = express.Router();
 
-reviewRoutes.delete("/deleteReview", deleteReview);
+reviewRoutes.delete("/deleteReview/:id", deleteReview);
 reviewRoutes.get("/", getAll);
 reviewRoutes.get("/:id", getById);
 reviewRoutes.post("/createReview", createReview);
