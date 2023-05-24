@@ -96,6 +96,10 @@ const register = async (req, res, next) => {
   }
 };
 
+//------------------------------ RESEND CODE --------------------------
+//---------------------------------------------------------------------
+const resendCode = async (req, res, next) => {};
+
 //------------------------------ FORGOT PASS --------------------------
 //---------------------------------------------------------------------
 
@@ -127,7 +131,7 @@ const forgotPassword = async (req, res, next) => {
         from: emailDB,
         to: emailUser,
         subject: "Nuevo acceso",
-        description: `User: ${userDB.name} tu nueva clave de acceso es: ${newPassword}`,
+        text: `User: ${userDB.name} tu nueva clave de acceso es: ${newPassword}`,
       };
 
       transporter.sendMail(mailOptions, async function (error, info) {
@@ -271,43 +275,8 @@ const logout = async (req, res, next) => {
   } catch (error) {}
 };
 
-//------------------------------ CREATE EVENT ------------------------------
-//--------------------------------------------------------------------------
-
-const createEvent = async (req, res, next) => {
-  try {
-    const { email, evName, description, location, data, hour } = req.body;
-    const user = await User.findOne({ email });
-    console.log(user);
-    const filterBody = {};
-
-    if (user.role !== "admin") {
-      return res.status(404).json("No tienes permisos de administrador");
-    } else {
-      const newEvent = new Event({
-        name: evName,
-        location: location,
-        data: data,
-        hour: hour,
-        description: description,
-      });
-      const saveEvent = await newEvent.save();
-      console.log(saveEvent);
-
-      if (saveEvent) {
-        return res.status(200).json(saveEvent);
-      } else {
-        return res.status(404).json("No se ha creado bien el evento ");
-      }
-    }
-  } catch (error) {
-    return next(error);
-  }
-};
-
 //------------------------------ ADD TO EVENT ------------------------------
 //--------------------------------------------------------------------------
-
 
 const addToEvent = async (req, res, next) => {
   try {
@@ -396,7 +365,7 @@ const addReview = async (req, res, next) => {
     if (savedReview) {
       const event = await Event.findById(eventId);
       if (!event) {
-      return res.status(404).json("El evento no existe");
+        return res.status(404).json("El evento no existe");
       }
 
       await User.findByIdAndUpdate(user._id, {
@@ -414,7 +383,6 @@ const addReview = async (req, res, next) => {
     return next(error);
   }
 };
-
 
 //------------------------------ GETALL ------------------------------
 //--------------------------------------------------------------------
@@ -480,5 +448,5 @@ module.exports = {
   createEvent,
   addToEvent,
   createReview,
-  addReview
+  addReview,
 };

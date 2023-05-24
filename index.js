@@ -29,8 +29,10 @@ server.use(express.urlencoded({ limit: "12mb", extended: false }));
 */
 const eventRoutes = require("./src/api/routes/Event.routes");
 const userRoutes = require("./src/api/routes/User.routes");
+const reviewRoutes = require("./src/api/routes/Review.routes");
 server.use("/api/v1/event/", eventRoutes);
-server.use("/api/v1/user", userRoutes);
+server.use("/api/v1/user/", userRoutes);
+server.use("/api/v1/review/", reviewRoutes);
 
 //controlamos los errores cuando no se meta bien la ruta o haya algun fallo
 /* server.use("*", (req, res, next) => {
