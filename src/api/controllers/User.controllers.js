@@ -335,6 +335,39 @@ const addToEvent = async (req, res, next) => {
   }
 };
 
+//------------------------------ CREATEREVIEW ------------------------
+//--------------------------------------------------------------------
+const createReview = async (req, res, next) => {
+  try {
+    const { eventId, description, userId, points } = req.body;
+
+    // Verifica si el evento existe
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json("El evento no existe");
+    }
+
+    // Crea la nueva reseña
+    const newReview = new Review({
+      event: event._id,
+      description: description,
+      user: userId,
+      points: points,
+    });
+
+    // Guarda la reseña en la base de datos
+    const savedReview = await newReview.save();
+
+    if (savedReview) {
+      return res.status(200).json(savedReview);
+    } else {
+      return res.status(404).json("No se ha creado correctamente la reseña");
+    }
+  } catch (error) {
+    return next(error);
+  }
+};
+
 //------------------------------ GETALL ------------------------------
 //--------------------------------------------------------------------
 

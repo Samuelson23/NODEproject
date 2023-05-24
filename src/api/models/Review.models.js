@@ -9,7 +9,7 @@ const ReviewSchema = new mongoose.Schema({
     required: true,
   },
   user: {
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Event" }],
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   },
   points: {
     type: Number,
