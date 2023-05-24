@@ -16,35 +16,34 @@ const createReview = async (req, res, next) => {
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json("No existe el usuario");
-    }else {
-
-    const newReview = new Review({
-      event: eventId,
-      description: description,
-      user: userId,
-      points: points,
-    });
-
-    const savedReview = await newReview.save();
-
-    if (savedReview) {
-      const event = await Event.findById(eventId);
-      if (!event) {
-      return res.status(404).json("El evento no existe");
-      }
-
-      await User.findByIdAndUpdate(user._id, {
-        $push: { review: savedReview._id },
-      });
-
-      await Event.findByIdAndUpdate(eventId, {
-        $push: { review: savedReview._id },
-      });
-      return res.status(200).json(savedReview);
     } else {
-      return res.status(404).json("No se ha creado correctamente la reseña");
+      const newReview = new Review({
+        event: eventId,
+        description: description,
+        user: userId,
+        points: points,
+      });
+
+      const savedReview = await newReview.save();
+
+      if (savedReview) {
+        const event = await Event.findById(eventId);
+        if (!event) {
+          return res.status(404).json("El evento no existe");
+        }
+
+        await User.findByIdAndUpdate(user._id, {
+          $push: { review: savedReview._id },
+        });
+
+        await Event.findByIdAndUpdate(eventId, {
+          $push: { review: savedReview._id },
+        });
+        return res.status(200).json(savedReview);
+      } else {
+        return res.status(404).json("No se ha creado correctamente la reseña");
+      }
     }
-  }
   } catch (error) {
     return next(error);
   }
@@ -52,10 +51,9 @@ const createReview = async (req, res, next) => {
 
 //------------------------------ DELETE ------------------------------
 //----------------------------------------------------------------------
-// Modificado 
-const deleteEvent = async (req, res, next) => {
+// Modificado
+const deleteReview = async (req, res, next) => {
   try {
-    
     const { id, image } = req.params;
     await Event.findByIdAndDelete(id);
 
@@ -74,17 +72,17 @@ const deleteEvent = async (req, res, next) => {
 //----------------------------------------------------------------------
 
 const getAll = async (req, res, next) => {
-    try {
-      const { all } = req.params;
-      const getByAll = await Event.find({ all });
-      if (getByAll) {
-        return res.status(200).json(getByAll);
-      } else {
-        return res.status(404).json("Not found get by all");
-      }
-    } catch (error) {
-      return next(error);
+  try {
+    const { all } = req.params;
+    const getByAll = await Event.find({ all });
+    if (getByAll) {
+      return res.status(200).json(getByAll);
+    } else {
+      return res.status(404).json("Not found get by all");
     }
+  } catch (error) {
+    return next(error);
+  }
 };
 
 //------------------------------ GETBYNAME ------------------------------
@@ -121,4 +119,4 @@ const getById = async (req, res, next) => {
   }
 };
 
-module.exports = { createReview, deleteEvent, getAll, getById, getByName };
+module.exports = { createReview, deleteReview, getAll, getById, getByName };
