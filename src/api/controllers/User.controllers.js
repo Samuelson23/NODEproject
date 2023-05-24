@@ -293,11 +293,12 @@ const createEvent = async (req, res, next) => {
       });
       const saveEvent = await newEvent.save();
       console.log(saveEvent);
-      /* if (saveEvent) {
+
+      if (saveEvent) {
         return res.status(200).json(saveEvent);
       } else {
         return res.status(404).json("No se ha creado bien el evento ");
-      } */
+      }
     }
   } catch (error) {
     return next(error);
@@ -328,7 +329,10 @@ const addToEvent = async (req, res, next) => {
         await eventById.updateOne({
           $push: { user: user._id },
         });
+        return res.status(200).json("Usuario inscrito correctamente al evento");
       });
+    } else {
+      return res.status(404).json("No existe el usuario");
     }
   } catch (error) {
     return next(error);
@@ -340,11 +344,11 @@ const addToEvent = async (req, res, next) => {
 
 const getAll = async (req, res, next) => {
   try {
-    const allUsers = await User.find().populate("events review");
+    const allUsers = await User.find().populate("events");
     if (allUsers) {
       return res.status(200).json(allUsers);
     } else {
-      return res.status(404).json("Not found user by id");
+      return res.status(404).json("No se ha encontrado ningun usuario");
     }
   } catch (error) {
     return next(error);
@@ -355,9 +359,9 @@ const getAll = async (req, res, next) => {
 //---------------------------------------------------------------------
 
 const getById = async (req, res, next) => {
-  /*   try {
+  try {
     const { id } = req.params;
-    const userById = await User.findById(id).populate("events review");
+    const userById = await User.findById(id).populate("event review");
     if (userById) {
       return res.status(200).json(userById);
     } else {
@@ -365,7 +369,7 @@ const getById = async (req, res, next) => {
     }
   } catch (error) {
     return next(error);
-  } */
+  }
 };
 
 //------------------------------ GETBYNAME ------------------------------
