@@ -15,7 +15,9 @@ const {
   createEvent,
   addToEvent,
   createReview,
-  addReview
+  addReview,
+  checkCode,
+  resendCode,
 } = require("../controllers/User.controllers");
 
 const express = require("express").Router();
@@ -27,6 +29,8 @@ userRoutes.post("/login", login);
 userRoutes.get("/forgotPassword", forgotPassword);
 userRoutes.post("/changePassword", changePassword);
 userRoutes.delete("/deleteUser", deleteUser);
+userRoutes.post("/checkCode", checkCode);
+userRoutes.post("/resendCode", resendCode);
 
 userRoutes.get("/name/:name", getByName);
 userRoutes.get("/", getAll);
