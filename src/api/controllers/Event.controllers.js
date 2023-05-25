@@ -83,17 +83,20 @@ const updateEvent = async (req, res, next) => {
 const deleteEvent = async (req, res, next) => {
   try {
     const { id } = req.params;
-    //await Event.findByIdAndDelete(id);
-    const event = await Event.findById(id);
-    console.log("--------", event);
-    if (event) {
-      event.review.forEach(async (item) => {
-        await Review.findByIdAndDelete(item);
-      });
-      await Event.findByIdAndDelete(id);
-    } else {
-      return res.status(404).json("el evento no existe");
+    const eventToDelete = await Event.findById(id);
+
+    if (!eventToDelete) {
+      return res.status(404).json("El evento no existe");
     }
+
+    // Borramos todas las reviews asociadas al evento
+    const reviewsEvent = eventToDelete.review;
+    reviewsEvent.forEach(async (reviewId) => {
+      await Review.findByIdAndDelete(reviewId);
+    });
+
+    // Borramos el evento
+    await Event.findByIdAndDelete(id);
 
     if (await Event.findById(id)) {
       return res.status(404).json("El evento no se ha borrado");
