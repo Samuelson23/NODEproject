@@ -95,7 +95,15 @@ const deleteEvent = async (req, res, next) => {
       await Review.findByIdAndDelete(reviewId);
     });
 
-    // Borramos el evento
+    //Recorremos todas las ids de los usuarios que se han apuntado a ese evento y, de cada usuario, le borramos el evento que vamos a eliminar
+    /* const userEvents = eventToDelete.user;
+    userEvents.forEach(async (id) => {
+      await User.findByIdAndUpdate(id, {
+        $pull: { events: eventToDelete },
+      });
+    }); */
+
+    // Borramos el evento y le devolvemos una respuesta segun si se ha borrado bien o no
     await Event.findByIdAndDelete(id);
 
     if (await Event.findById(id)) {

@@ -54,15 +54,29 @@ const deleteReview = async (req, res, next) => {
 
     if (!reviewToDelete) {
       return res.status(404).json("La review no existe");
-    }
-
-    // Eliminamos la review
-    await Review.findByIdAndDelete(id);
-
-    if (await Review.findById(id)) {
-      return res.status(404).json("La review no se ha borrado");
     } else {
-      return res.status(200).json("Review borrada");
+      //Guardamos el ID del user y del event
+      const idUser = reviewToDelete.user;
+      const idEvent = reviewToDelete.event;
+      console.log(idUser, idEvent);
+
+      //Buscamos a ese usuario por la ID y le quitamos la review
+      await User.findByIdAndUpdate(idUser, {
+        $pull: { review: id },
+      });
+      //Buscamos a ese evento por la ID y le quitamos la review
+      await Event.findByIdAndUpdate(idEvent, {
+        $pull: { review: id },
+      });
+
+      //Borramos la review y enviamos una respuesta segun si se ha borrado correctamente o no
+      await Review.findByIdAndDelete(id);
+
+      if (await Review.findById(id)) {
+        return res.status(404).json("La review no se ha borrado");
+      } else {
+        return res.status(200).json("Review borrada");
+      }
     }
   } catch (error) {
     return next(error);
