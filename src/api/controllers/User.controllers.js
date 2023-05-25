@@ -331,15 +331,11 @@ const deleteUser = async (req, res, next) => {
     } else {
       //Recorremos el array de eventos que contiene las IDS de los eventos a los que se ha apuntado el user. Buscamos el evento con un findbyIdAndUpdate para actualizarle el campo que queramos, en este caso el de user. Con " $pull " lo que hacemos es quitar del campo "user" el valor de la id que queremos, en este caso userID que es el id del user que hemos borrado.
       eventsUser.forEach(async (id) => {
-        await Event.findByIdAndUpdate(id, {
-          $pull: { user: userID },
-        });
+        await Event.findByIdAndUpdate(id);
       });
       //Recorremos el array de reviews que contiene las IDS de las reviews que ha creado el user. Buscamos la review con un findbyIdAndUpdate para actualizarle el campo que queramos, en este caso el de user. Con " $pull " lo que hacemos es quitar del campo "user" el valor de la id que queremos, en este caso userID que es el id del user que hemos borrado.
       reviewsUser.forEach(async (id) => {
-        await Review.findByIdAndUpdate(id, {
-          $pull: { user: userID },
-        });
+        await Review.findByIdAndDelete(id);
       });
 
       deleteImgCloudinary(userToDelete.imagen);
