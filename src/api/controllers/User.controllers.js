@@ -411,7 +411,7 @@ const addReview = async (req, res, next) => {
     }
 
     const newReview = new Review({
-      event: event._id,
+      event: eventId,
       description: description,
       user: userId,
       points: points,
@@ -463,7 +463,7 @@ const getAll = async (req, res, next) => {
 const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const userById = await User.findById(id).populate("event review");
+    const userById = await User.findById(id).populate("events review");
     if (userById) {
       return res.status(200).json(userById);
     } else {

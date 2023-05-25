@@ -67,8 +67,7 @@ const deleteReview = async (req, res, next) => {
 
 const getAll = async (req, res, next) => {
   try {
-    const { all } = req.params;
-    const getByAll = await Review.find({ all }).populate("event user");
+    const getByAll = await Review.find().populate("event user");
     if (getByAll) {
       return res.status(200).json(getByAll);
     } else {
