@@ -384,14 +384,18 @@ const changeEmail = async (req, res, next) => {
   try {
     //Recogemos los datos del email, contraseña y nuevo email de la request y buscamos al usuario por email
     const { email, password, newEmail } = req.body;
-    const user = User.findOne({ email });
+    const user = await User.findOne({ email });
+    console.log(user.password);
+    console.log(newEmail);
 
     //Si el usuario existe pasamos a comprobar que la contraseña introducida es la correcta. En caso de ser correcta hacemos un updateOne de la clave email y actualizamos el email al nuevo que nos ha pasado
     if (user) {
       if (bcrypt.compareSync(password, user.password)) {
-        const userUpdated = await User.updateOne({ email: newEmail });
-        await userUpdated.save();
+        await user.updateOne({ email: newEmail });
+        //await userUpdated.save();
+        const userUpdated = await user.save();
 
+        console.log(userUpdated.password);
         //Guardamos el usuario y si el usuario es correcto devolvemos un test para ver que se ha actualizado bien
         if (userUpdated) {
           return res.status(200).json({
@@ -555,4 +559,5 @@ module.exports = {
   resendCode,
   checkUser,
   addReview,
+  changeEmail,
 };

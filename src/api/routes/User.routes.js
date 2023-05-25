@@ -13,6 +13,7 @@ const {
   addToEvent,
   checkUser,
   resendCode,
+  changeEmail,
 } = require("../controllers/User.controllers");
 
 const express = require("express").Router();
@@ -30,6 +31,7 @@ userRoutes.patch("/updateUser/:id", updateUser);
 userRoutes.get("/name/:name", getByName);
 userRoutes.get("/", getAll);
 userRoutes.get("/:id", getById);
+userRoutes.post("/changeEmail", changeEmail);
 
 userRoutes.post("/addtoEvent", addToEvent);
 
