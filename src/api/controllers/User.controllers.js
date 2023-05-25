@@ -378,8 +378,42 @@ const login = async (req, res, next) => {
   }
 };
 
-//------------------------------ LOGOUT ------------------------------
-//--------------------------------------------------------------------
+//------------------------------ CHANGE EMAIL ------------------------------
+//--------------------------------------------------------------------------
+const changeEmail = async (req, res, next) => {
+  try {
+    //Recogemos los datos del email, contraseña y nuevo email de la request y buscamos al usuario por email
+    const { email, password, newEmail } = req.body;
+    const user = User.findOne({ email });
+
+    //Si el usuario existe pasamos a comprobar que la contraseña introducida es la correcta. En caso de ser correcta hacemos un updateOne de la clave email y actualizamos el email al nuevo que nos ha pasado
+    if (user) {
+      if (bcrypt.compareSync(password, user.password)) {
+        const userUpdated = await User.updateOne({ email: newEmail });
+        await userUpdated.save();
+
+        //Guardamos el usuario y si el usuario es correcto devolvemos un test para ver que se ha actualizado bien
+        if (userUpdated) {
+          return res.status(200).json({
+            userUpdated: true,
+            emailUpdated: true,
+          });
+        } else {
+          return res.status(404).json({
+            userUpdated: false,
+            emailUpdated: false,
+          });
+        }
+      } else {
+        return res.status(404).json("Las contraseñas no coinciden");
+      }
+    } else {
+      return res.status(404).json("No se ha encontrado el usuario");
+    }
+  } catch (error) {
+    return next(error);
+  }
+};
 
 //------------------------------ ADD TO EVENT ------------------------------
 //--------------------------------------------------------------------------
