@@ -21,6 +21,7 @@ server.use(
 
 //limitamos el envio de datos a 5mb y hacemos el urlencoded
 server.use(express.json({ limit: "12mb" }));
+
 server.use(express.urlencoded({ limit: "12mb", extended: false }));
 
 /*
