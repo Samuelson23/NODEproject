@@ -376,7 +376,7 @@ const login = async (req, res, next) => {
       if (bcrypt.compareSync(password, userDB.password)) {
         const token = generateToken(userDB._id, email);
         return res.status(200).json({
-          user: { email, _id: userDB._id },
+          user: userDB,
           token,
         });
       } else {
