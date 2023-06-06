@@ -38,47 +38,51 @@ const register = async (req, res, next) => {
           "https://res.cloudinary.com/dwbw3uill/image/upload/v1684827346/png-clipart-graphics-arrest-youtuber-anonymous-angle-rectangle-thumbnail_zyxs7h.png";
       }
 
-      //guardamos el usuario
-      const userSave = await newUser.save();
+      //guardamos el usuario. Hacemos un try-catch para asegurarnos que se guarda correctamente y sino es así, controlamos el error.
 
-      //comprobamos si se ha guardado bien. De ser asi le enviamos el correo de verificacion con el codigo de confirmacion. Todo esto lo hacemos con nodemailer
-      if (userSave) {
-        const emailDB = process.env.EMAIL;
-        const passwordDB = process.env.PASSWORD;
+      try {
+        const userSave = await newUser.save();
+        //comprobamos si se ha guardado bien. De ser asi le enviamos el correo de verificacion con el codigo de confirmacion. Todo esto lo hacemos con nodemailer
+        if (userSave) {
+          const emailDB = process.env.EMAIL;
+          const passwordDB = process.env.PASSWORD;
 
-        //El transporter es el metodo por el cual se envia el correo (serivicio=gmail y los datos de quien lo envia, en este caso el email y pass de nuestra base de datos)
-        const transporter = nodemailer.createTransport({
-          service: "gmail",
-          auth: {
-            user: emailDB,
-            pass: passwordDB,
-          },
-        });
+          //El transporter es el metodo por el cual se envia el correo (serivicio=gmail y los datos de quien lo envia, en este caso el email y pass de nuestra base de datos)
+          const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+              user: emailDB,
+              pass: passwordDB,
+            },
+          });
 
-        //Creamos las opciones del email (quien lo envia, a quien, y lo que le vamos a decir en el email)
-        const mailOptions = {
-          from: emailDB,
-          to: email,
-          subject: "Confirmation code",
-          text: `Tu codigo de confirmacion ${confirmationCode}. Gracias por registrarte ${name}`,
-        };
+          //Creamos las opciones del email (quien lo envia, a quien, y lo que le vamos a decir en el email)
+          const mailOptions = {
+            from: emailDB,
+            to: email,
+            subject: "Confirmation code",
+            text: `Tu codigo de confirmacion ${confirmationCode}. Gracias por registrarte ${name}`,
+          };
 
-        //Enviamos el correo y comprobamos que no haya un error. Si hay un error devolvemos un 404 y si no hay ningun error devolvemos un 200 con el usuario y su codigo de confirmacion
-        transporter.sendMail(mailOptions, function (error) {
-          if (error) {
-            console.log(error);
-            return res.status(404).json({
-              user: userSave,
-              confirmationCode: "error en el codigo de confirmacion",
-            });
-          } else {
-            console.log("Email enviado");
-            return res.status(200).json({
-              user: userSave,
-              confirmationCode,
-            });
-          }
-        });
+          //Enviamos el correo y comprobamos que no haya un error. Si hay un error devolvemos un 404 y si no hay ningun error devolvemos un 200 con el usuario y su codigo de confirmacion
+          transporter.sendMail(mailOptions, function (error) {
+            if (error) {
+              console.log(error);
+              return res.status(404).json({
+                user: userSave,
+                confirmationCode: "error en el codigo de confirmacion",
+              });
+            } else {
+              console.log("Email enviado");
+              return res.status(200).json({
+                user: userSave,
+                confirmationCode,
+              });
+            }
+          });
+        }
+      } catch (error) {
+        return res.status(404).json(error);
       }
 
       //Si el usuario ya existe en la base de datos lanzamos un error 409 de conflicto, porque ya está registrado y borramos la imagen que nos ha enviado en la request porque se ha subido a Cloudinary
@@ -251,18 +255,22 @@ const changePassword = async (req, res, next) => {
       await User.findByIdAndUpdate(userID, { password: newPasswordEncrypt });
 
       //Buscamos el usuario para comprobar que se haya actualizado la contraseña. Si es asi, devolvemos un 200 con true y sino un 404 con false
-      const userUpdate = await User.findById(userID);
-      console.log(userUpdate);
-      if (bcrypt.compareSync(newPassword, userUpdate.password)) {
-        return res.status(200).json({
-          updateUser: true,
-          updatePassword: true,
-        });
-      } else {
-        return res.status(404).json({
-          updateUser: false,
-          updatePassword: false,
-        });
+      try {
+        const userUpdate = await User.findById(userID);
+        console.log(userUpdate);
+        if (bcrypt.compareSync(newPassword, userUpdate.password)) {
+          return res.status(200).json({
+            updateUser: true,
+            updatePassword: true,
+          });
+        } else {
+          return res.status(404).json({
+            updateUser: false,
+            updatePassword: false,
+          });
+        }
+      } catch (error) {
+        return res.status(404).json(error);
       }
     } else {
       return res.status(404).json("La contraseña introducida es incorrecta");
@@ -289,7 +297,7 @@ const updateUser = async (req, res, next) => {
         user.name = name;
       }
       if (image) {
-        user.image = image;
+        user.imagen = image;
       }
       if (events) {
         user.events = events;
@@ -298,10 +306,14 @@ const updateUser = async (req, res, next) => {
 
     const updatedUser = await user.save();
 
-    if (updatedUser) {
-      return res.status(200).json(updatedUser);
-    } else {
-      return res.status(404).json("No se ha podido actualizar el usuario");
+    try {
+      if (updatedUser) {
+        return res.status(200).json(updatedUser);
+      } else {
+        return res.status(404).json("No se ha podido actualizar el usuario");
+      }
+    } catch (error) {
+      return res.status(404).json(error);
     }
   } catch (error) {
     return next(error);
@@ -326,20 +338,24 @@ const deleteUser = async (req, res, next) => {
     await User.findByIdAndDelete(userID);
     console.log(userToDelete);
     console.log(reviewsUser);
-    if (await User.findById(userID)) {
-      return res.status(404).json("No se ha podido borrar el usuario");
-    } else {
-      //Recorremos el array de eventos que contiene las IDS de los eventos a los que se ha apuntado el user. Buscamos el evento con un findbyIdAndUpdate para actualizarle el campo que queramos, en este caso el de user. Con " $pull " lo que hacemos es quitar del campo "user" el valor de la id que queremos, en este caso userID que es el id del user que hemos borrado.
-      eventsUser.forEach(async (id) => {
-        await Event.findByIdAndUpdate(id);
-      });
-      //Recorremos el array de reviews que contiene las IDS de las reviews que ha creado el user. Buscamos la review con un findbyIdAndUpdate para actualizarle el campo que queramos, en este caso el de user. Con " $pull " lo que hacemos es quitar del campo "user" el valor de la id que queremos, en este caso userID que es el id del user que hemos borrado.
-      reviewsUser.forEach(async (id) => {
-        await Review.findByIdAndDelete(id);
-      });
+    try {
+      if (await User.findById(userID)) {
+        return res.status(404).json("No se ha podido borrar el usuario");
+      } else {
+        //Recorremos el array de eventos que contiene las IDS de los eventos a los que se ha apuntado el user. Buscamos el evento con un findbyIdAndUpdate para actualizarle el campo que queramos, en este caso el de user. Con " $pull " lo que hacemos es quitar del campo "user" el valor de la id que queremos, en este caso userID que es el id del user que hemos borrado.
+        eventsUser.forEach(async (id) => {
+          await Event.findByIdAndUpdate(id);
+        });
+        //Recorremos el array de reviews que contiene las IDS de las reviews que ha creado el user. Buscamos la review con un findbyIdAndUpdate para actualizarle el campo que queramos, en este caso el de user. Con " $pull " lo que hacemos es quitar del campo "user" el valor de la id que queremos, en este caso userID que es el id del user que hemos borrado.
+        reviewsUser.forEach(async (id) => {
+          await Review.findByIdAndDelete(id);
+        });
 
-      deleteImgCloudinary(userToDelete.imagen);
-      return res.status(200).json("Se ha borrado el usuario correctamente");
+        deleteImgCloudinary(userToDelete.imagen);
+        return res.status(200).json("Se ha borrado el usuario correctamente");
+      }
+    } catch (error) {
+      return res.status(404).json(error);
     }
   } catch (error) {
     return next(error);
