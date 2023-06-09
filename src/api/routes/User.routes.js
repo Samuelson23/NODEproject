@@ -25,7 +25,7 @@ userRoutes.post("/login", login);
 userRoutes.get("/forgotPassword", forgotPassword);
 userRoutes.post("/changePassword", changePassword);
 userRoutes.delete("/deleteUser", deleteUser);
-userRoutes.post("/checkUser", checkUser);
+userRoutes.post("/checkCode", checkUser);
 userRoutes.post("/resendCode", resendCode);
 userRoutes.patch("/updateUser/:id", updateUser);
 userRoutes.get("/name/:name", getByName);

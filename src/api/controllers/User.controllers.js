@@ -15,7 +15,7 @@ dotenv.config();
 //------------------------------ REGISTER ------------------------------
 //----------------------------------------------------------------------
 
-const register = async (req, res, next) => {
+/* const register = async (req, res, next) => {
   let userImage = req.file?.path;
   try {
     //Creamos el codigo de verificacion con la funcion importada randomCode() y nos guardamos el name y email que nos pasa por la request
@@ -40,49 +40,45 @@ const register = async (req, res, next) => {
 
       //guardamos el usuario. Hacemos un try-catch para asegurarnos que se guarda correctamente y sino es así, controlamos el error.
 
-      try {
-        const userSave = await newUser.save();
-        //comprobamos si se ha guardado bien. De ser asi le enviamos el correo de verificacion con el codigo de confirmacion. Todo esto lo hacemos con nodemailer
-        if (userSave) {
-          const emailDB = process.env.EMAIL;
-          const passwordDB = process.env.PASSWORD;
+      const userSave = await newUser.save();
+      //comprobamos si se ha guardado bien. De ser asi le enviamos el correo de verificacion con el codigo de confirmacion. Todo esto lo hacemos con nodemailer
+      if (userSave) {
+        const emailDB = process.env.EMAIL;
+        const passwordDB = process.env.PASSWORD;
 
-          //El transporter es el metodo por el cual se envia el correo (serivicio=gmail y los datos de quien lo envia, en este caso el email y pass de nuestra base de datos)
-          const transporter = nodemailer.createTransport({
-            service: "gmail",
-            auth: {
-              user: emailDB,
-              pass: passwordDB,
-            },
-          });
+        //El transporter es el metodo por el cual se envia el correo (serivicio=gmail y los datos de quien lo envia, en este caso el email y pass de nuestra base de datos)
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: emailDB,
+            pass: passwordDB,
+          },
+        });
 
-          //Creamos las opciones del email (quien lo envia, a quien, y lo que le vamos a decir en el email)
-          const mailOptions = {
-            from: emailDB,
-            to: email,
-            subject: "Confirmation code",
-            text: `Tu codigo de confirmacion ${confirmationCode}. Gracias por registrarte ${name}`,
-          };
+        //Creamos las opciones del email (quien lo envia, a quien, y lo que le vamos a decir en el email)
+        const mailOptions = {
+          from: emailDB,
+          to: email,
+          subject: "Confirmation code",
+          text: `Tu codigo de confirmacion ${confirmationCode}. Gracias por registrarte ${name}`,
+        };
 
-          //Enviamos el correo y comprobamos que no haya un error. Si hay un error devolvemos un 404 y si no hay ningun error devolvemos un 200 con el usuario y su codigo de confirmacion
-          transporter.sendMail(mailOptions, function (error) {
-            if (error) {
-              console.log(error);
-              return res.status(404).json({
-                user: userSave,
-                confirmationCode: "error en el codigo de confirmacion",
-              });
-            } else {
-              console.log("Email enviado");
-              return res.status(200).json({
-                user: userSave,
-                confirmationCode,
-              });
-            }
-          });
-        }
-      } catch (error) {
-        return res.status(404).json(error);
+        //Enviamos el correo y comprobamos que no haya un error. Si hay un error devolvemos un 404 y si no hay ningun error devolvemos un 200 con el usuario y su codigo de confirmacion
+        transporter.sendMail(mailOptions, function (error) {
+          if (error) {
+            console.log(error);
+            return res.status(404).json({
+              user: userSave,
+              confirmationCode: "error en el codigo de confirmacion",
+            });
+          } else {
+            console.log("Email enviado");
+            return res.status(200).json({
+              user: userSave,
+              confirmationCode,
+            });
+          }
+        });
       }
 
       //Si el usuario ya existe en la base de datos lanzamos un error 409 de conflicto, porque ya está registrado y borramos la imagen que nos ha enviado en la request porque se ha subido a Cloudinary
@@ -92,6 +88,88 @@ const register = async (req, res, next) => {
     }
   } catch (error) {
     //deleteImgCloudinary(userImage);
+    return next(error);
+  }
+}; */
+
+const register = async (req, res, next) => {
+  console.log("entro");
+  console.log(req.body);
+  let catchImg = req.file?.path;
+  try {
+    // actualizamos los indexes de los elementos unicos por si acaso han variado
+    await User.syncIndexes();
+    // creamos el code con la funcion randomCode que os la mostramos antes en la page user
+    let confirmationCode = randomCode();
+    // hacemos destructuring de email y name
+    const { email, name } = req.body;
+    // aqui buscamos uno que tenga como elemento unico email y name
+    // recordar si no son elemento así se pone: { email: req.body.email, name: req.body.name }
+    const userExist = await User.findOne({ email: req.body.email }, { name: req.body.name });
+
+    // si no tenemos el usuario entonces si hacemos el registro
+    if (!userExist) {
+      // le metemos el code de confirmacion que generamos
+      const newUser = new User({ ...req.body, confirmationCode });
+      // si tenemos un archivo entonces  le metemos ese archivo sino una imagen por defecto
+      if (req.file) {
+        newUser.imagen = req.file.path;
+      } else {
+        newUser.imagen = "https://pic.onlinewebfonts.com/svg/img_181369.png";
+      }
+      // hacemos el guardado del elemento en mongodb
+      try {
+        // hacemos el guardado
+        const userSave = await newUser.save();
+        // si existe el usuario guardado hacemos el envio del email
+        if (userSave) {
+          const emailEnv = process.env.EMAIL;
+          const password = process.env.PASSWORD;
+
+          const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+              user: emailEnv,
+              pass: password,
+            },
+          });
+
+          const mailOptions = {
+            from: emailEnv,
+            to: email,
+            subject: "Confirmation code",
+            text: `tu codigo es ${confirmationCode}, gracias por confiar en nosotros ${name}`,
+          };
+
+          transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+              console.log(error);
+              /// si ha habido un error en el envio del codigo lanzamos un 404
+              return res.status(404).json({
+                user: userSave,
+                confirmationCode: "error, resend code",
+              });
+            } else {
+              console.log("Email sent: " + info.response);
+              /// si se ha enviado el código lanzamos el código con el user
+              return res.status(200).json({
+                user: userSave,
+                confirmationCode,
+              });
+            }
+          });
+        }
+      } catch (error) {
+        return res.status(404).json(error.message);
+      }
+    } else {
+      // SI EXISTE EL USUARIO ENTONCES BORRAMOS LA IMAGEN QUE SUBIO EL MIDDLEWARE
+      if (req.file) deleteImgCloudinary(catchImg);
+      return res.status(409).json("this user already exist");
+    }
+  } catch (error) {
+    // SIEMPRE QUE HAY UN ERROR GENERAL TENEMOS QUE BORRAR LA IMAGEN QUE HA SUBIDO EL MIDDLEWARE
+    if (req.file) deleteImgCloudinary(catchImg);
     return next(error);
   }
 };
@@ -329,16 +407,13 @@ const deleteUser = async (req, res, next) => {
     //Recogemos el email de la request y buscamos al usuario por su email para obtener la ID y despues borrarlo con findByIdAndDelete
     const { email } = req.body;
     console.log(email);
-    const userToDelete = await User.findOne({ email });
-    //Aqui guardamos todas las reviews que ha creado el usuario para poder borrarlas cuando borremos al user
-    const reviewsUser = userToDelete.review;
-    const eventsUser = userToDelete.events;
-    //Buscamos la ID del usuario y lo borramos
-    const userID = userToDelete._id;
-    await User.findByIdAndDelete(userID);
-    console.log(userToDelete);
-    console.log(reviewsUser);
     try {
+      const userToDelete = await User.findOne({ email });
+      const reviewsUser = userToDelete.review;
+      const eventsUser = userToDelete.events;
+      //Buscamos la ID del usuario y lo borramos
+      const userID = userToDelete._id;
+      await User.findByIdAndDelete(userID);
       if (await User.findById(userID)) {
         return res.status(404).json("No se ha podido borrar el usuario");
       } else {
@@ -355,8 +430,12 @@ const deleteUser = async (req, res, next) => {
         return res.status(200).json("Se ha borrado el usuario correctamente");
       }
     } catch (error) {
-      return res.status(404).json(error);
+      return res.status(404).json("no se ha encontrado ningun usuario con ese email");
     }
+    //Aqui guardamos todas las reviews que ha creado el usuario para poder borrarlas cuando borremos al user
+
+    console.log(userToDelete);
+    console.log(reviewsUser);
   } catch (error) {
     return next(error);
   }
