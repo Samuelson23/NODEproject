@@ -224,6 +224,7 @@ const checkUser = async (req, res, next) => {
     const { email, confirmationCode } = req.body;
     const checkUser = await User.findOne({ email });
     console.log("145---------", confirmationCode);
+    console.log(email);
     console.log(checkUser.confirmationCode);
     if (!checkUser) {
       return res.status(404).json("Ese usuario no existe");
