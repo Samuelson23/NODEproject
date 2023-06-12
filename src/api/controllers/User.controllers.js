@@ -225,7 +225,7 @@ const checkUser = async (req, res, next) => {
     const checkUser = await User.findOne({ email });
     console.log("145---------", confirmationCode);
     console.log(email);
-    console.log(checkUser.confirmationCode);
+    //console.log(checkUser.confirmationCode);
     if (!checkUser) {
       return res.status(404).json("Ese usuario no existe");
     } else {
@@ -256,6 +256,7 @@ const forgotPassword = async (req, res, next) => {
     //Recogemos el email del usuario que quiere cambiar la contraseña
     //Buscamos al usuario por su email y creamos una contraseña nueva con randomPassword()
     const emailUser = req.body.email;
+    console.log(emailUser);
     const userDB = await User.findOne({ email: emailUser });
     const newPassword = randomPassword();
     console.log("CONSOLELOG USER", userDB);
@@ -365,10 +366,10 @@ const changePassword = async (req, res, next) => {
 const updateUser = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { name, image, events } = req.body;
-
-    const user = await User.findById(id);
-
+    const { name, image, gender, email } = req.body;
+    console.log("req", req.email);
+    const user = await User.findOne({ email });
+    console.log(user);
     if (!user) {
       return res.status(404).json("Usuario no encontrado");
     } else {
@@ -378,8 +379,8 @@ const updateUser = async (req, res, next) => {
       if (image) {
         user.imagen = image;
       }
-      if (events) {
-        user.events = events;
+      if (gender) {
+        user.gender = gender;
       }
     }
 
@@ -515,28 +516,36 @@ const changeEmail = async (req, res, next) => {
 //--------------------------------------------------------------------------
 
 const addToEvent = async (req, res, next) => {
+  console.log(req.body);
   try {
     const { email, events } = req.body;
     const user = await User.findOne({ email });
     //Creamos un array con los eventos introducidos en la request
-    const arrayEvents = events.split(",");
+    const arrayEvents = events;
     console.log(arrayEvents);
     //Si el usuario existe, recorremos el array con todos los eventos que se hayan introducido para:
     //    1) a User.events le puseamos cada uno de los eventos (las ids)
     //    2) buscamos el evento por la ID y a ese evento le actualizamos el Event.user para que salga el usuario
     if (user._id) {
-      arrayEvents.forEach(async (item) => {
-        console.log("item", item);
+      if (!user.events.includes(events)) {
         await User.findByIdAndUpdate(user._id, {
-          $push: { events: item },
+          $push: { events: events },
         });
-
-        const eventById = await Event.findById(item);
+        const eventById = await Event.findById(events);
         await eventById.updateOne({
           $push: { user: user._id },
         });
         return res.status(200).json("Usuario inscrito correctamente al evento");
-      });
+      } else {
+        await User.findByIdAndUpdate(user._id, {
+          $pull: { events: events },
+        });
+        const eventById = await Event.findById(events);
+        await eventById.updateOne({
+          $pull: { user: user._id },
+        });
+        return res.status(200).json("Usuario borrado correctamente del evento");
+      }
     } else {
       return res.status(404).json("No existe el usuario");
     }
@@ -544,6 +553,8 @@ const addToEvent = async (req, res, next) => {
     return next(error);
   }
 };
+
+//---------------- DELETE FROM EVENT
 
 //------------------------------ ADD REVIEW ------------------------------
 //--------------------------------------------------------------------------
@@ -581,6 +592,34 @@ const addReview = async (req, res, next) => {
       return res.status(200).json(savedReview);
     } else {
       return res.status(404).json("No se ha creado correctamente la reseña");
+    }
+  } catch (error) {
+    return next(error);
+  }
+};
+
+//---------------------AUTOLOGIN----------------------
+//! -----------------------------------------------------------------------------
+//? --------------------------------AUTOLOGIN ---------------------------------------
+//! -----------------------------------------------------------------------------
+
+const autoLogin = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    const userDB = await User.findOne({ email });
+
+    if (userDB) {
+      if ((password, userDB.password)) {
+        const token = generateToken(userDB._id, email);
+        return res.status(200).json({
+          user: userDB,
+          token,
+        });
+      } else {
+        return res.status(404).json("password dont match");
+      }
+    } else {
+      return res.status(404).json("User no register");
     }
   } catch (error) {
     return next(error);
@@ -652,4 +691,5 @@ module.exports = {
   checkUser,
   addReview,
   changeEmail,
+  autoLogin,
 };

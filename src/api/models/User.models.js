@@ -33,7 +33,7 @@ const UserSchema = new Schema(
     confirmationCode: { type: String, required: true },
     check: { type: Boolean, default: false },
     events: [{ type: mongoose.Schema.Types.ObjectId, ref: "Event" }],
-    review: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],
+    review: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review", default: [] }],
   },
   {
     timestamps: true,

@@ -4,9 +4,9 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const isAdmin = async (req, res, next) => {
-  const token = req.headers.authorization?.replace("Beare", "");
+  const token = req.headers.authorization?.replace("Bearer ", "");
   if (!token) {
-    return next(new Error("No autorizado"));
+    return next(new Error("Unauthorized"));
   }
 
   try {
@@ -14,11 +14,28 @@ const isAdmin = async (req, res, next) => {
     console.log(decoded);
     req.user = await User.findById(decoded.id);
     if (req.user.role !== "admin") {
-      return next(new Error("No tienes permisos. No eres admin"));
+      return next(new Error("Unauthorized, not admin"));
     }
+    next();
   } catch (error) {
     return next(error);
   }
 };
 
-module.exports = isAdmin;
+const isAuth = async (req, res, next) => {
+  const token = req.headers.authorization?.replace("Bearer ", "");
+
+  if (!token) {
+    return next(new Error("Unauthorized"));
+  }
+
+  try {
+    const decoded = verifyToken(token, process.env.JWT_SECRET);
+    req.user = await User.findById(decoded.id);
+    next();
+  } catch (error) {
+    return next(error);
+  }
+};
+
+module.exports = { isAdmin, isAuth };
